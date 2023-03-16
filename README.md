@@ -4,9 +4,9 @@ Contributors:
 
 1. Ziad Maged Morsi Elsabbagh
 
-2. yasmina tamer ramadan
+2. Yasmina Tamer Ramadan
 
-3. youssef alaa mahmoud
+3. Youssef Alaa Mahmoud
 
 4. Salma ElZiady
 
