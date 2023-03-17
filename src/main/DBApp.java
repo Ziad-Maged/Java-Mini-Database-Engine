@@ -9,7 +9,7 @@ import exceptions.*;
 
 public class DBApp {
 
-    private String strCurrentDatabaseName;
+    private static String strCurrentDatabaseName;
 
     public void init() throws IOException {
 
@@ -38,8 +38,8 @@ public class DBApp {
         }
     }
 
-    public void selectDatabase(String strDatabaseName) {
-        this.strCurrentDatabaseName = strDatabaseName;
+    public static void selectDatabase(String strDatabaseName) {
+        strCurrentDatabaseName = strDatabaseName;
     }
 
     public void createTable(String strTableName, String strClusteringKeyColumn,
@@ -116,7 +116,7 @@ public class DBApp {
         return null;
     }
 
-    public String getStrCurrentDatabaseName() {
+    public static String getStrCurrentDatabaseName() {
         return strCurrentDatabaseName;
     }
 
@@ -124,7 +124,7 @@ public class DBApp {
 		DBApp app = new DBApp();
 		app.createDatabase("ThisTestRun");
 		app.selectDatabase("ThisTestRun");
-		System.out.println(app.getStrCurrentDatabaseName());
+		System.out.println(DBApp.getStrCurrentDatabaseName());
 
 		Hashtable<String, String> htblColNameType = new Hashtable<>();
 		htblColNameType.put("name", "java.lang.String");
