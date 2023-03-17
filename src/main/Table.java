@@ -66,11 +66,11 @@ public class Table implements Serializable{
 
     }
 
-    public void delete(){
+    public void delete(String strClusteringKeyValue, Hashtable<String,Object> htblColNameValue){
 
     }
 
-    public void update(){
+    public void update(String strClusteringKeyValue, Hashtable<String,Object> htblColNameValue){
 
     }
 }
