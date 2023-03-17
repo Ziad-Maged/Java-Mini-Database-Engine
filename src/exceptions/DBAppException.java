@@ -1,7 +1,8 @@
 package exceptions;
 
-abstract public class DBAppException extends Exception{
+import main.DBApp;
 
+abstract public class DBAppException extends Exception{
     public DBAppException(){
         super();
     }
@@ -9,5 +10,4 @@ abstract public class DBAppException extends Exception{
     public DBAppException(String message){
         super(message);
     }
-
 }

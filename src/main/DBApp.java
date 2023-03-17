@@ -45,11 +45,11 @@ public class DBApp {
     public void createTable(String strTableName, String strClusteringKeyColumn,
                             Hashtable<String, String> htblColNameType,
                             Hashtable<String, String> htblColNameMin,
-                            Hashtable<String, String> htblColNameMax) throws DBAppException{
+                            Hashtable<String, String> htblColNameMax) throws DBAppException, TypeNotSupportedException {
         for(String e : htblColNameType.values()) {
             if(!e.equals("java.lang.Integer") && !e.equals("java.lang.Double") &&
                     !e.equals("java.lang.Date") && !e.equals("java.lang.String")) {
-                throw new TypeNotSupportedException(e + "is not a supported type.");
+                throw new TypeNotSupportedException(e + " is not a supported type.");
             }
         }
 
@@ -143,7 +143,7 @@ public class DBApp {
 
 		try {
 			app.createTable("Table1", "id", htblColNameType, htblColNameMin, htblColNameMax);
-		} catch (DBAppException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -164,32 +164,14 @@ public class DBApp {
 
 		try {
 			app.createTable("Table2", "id", htblColNameType, htblColNameMin, htblColNameMax);
-		} catch (DBAppException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
 //    public static void main(String[] args) {
-//        Vector<String> test = new Vector<>();
-//        test.add("this is a test");
-//        System.out.println(test);
-//        try{
-//            FileOutputStream fileOut = new FileOutputStream("vector.class");
-//            ObjectOutputStream out = new ObjectOutputStream(fileOut);
-//            out.writeObject(test);
-//            out.close();
-//            fileOut.close();
-//
-//            FileInputStream fileIn = new FileInputStream("vector.class");
-//            ObjectInputStream in = new ObjectInputStream(fileIn);
-//            Vector<String> trial = (Vector<String>) in.readObject();
-//            fileIn.close();
-//            in.close();
-//            System.out.println(trial);
-//        }catch(Exception e){
-//
-//        }
+//        Page page = new Page("test");
 //    }
 
 }
