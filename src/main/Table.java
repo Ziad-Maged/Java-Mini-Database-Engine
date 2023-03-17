@@ -48,15 +48,15 @@ public class Table implements Serializable{
         }
     }
 
-    public Vector<Hashtable> loadPage(String filePath){
-        Vector<Hashtable> result = null;
+    public Page loadPage(String filePath){
+        Vector<Hashtable<String, Object>> result = null;
         try{
             FileInputStream fileIn = new FileInputStream(filePath);
             ObjectInputStream in = new ObjectInputStream(fileIn);
-            result = (Vector<Hashtable>) in.readObject();
+            result = (Vector<Hashtable<String, Object>>) in.readObject();
             fileIn.close();
             in.close();
-            return result;
+            return new Page(result);
         }catch (Exception e1){
             return null;
         }
