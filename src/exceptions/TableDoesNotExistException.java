@@ -1,6 +1,6 @@
 package exceptions;
 
-public class TableDoesNotExistException extends Exception {
+public class TableDoesNotExistException extends DBAppException {
 
     public TableDoesNotExistException(){
         super();

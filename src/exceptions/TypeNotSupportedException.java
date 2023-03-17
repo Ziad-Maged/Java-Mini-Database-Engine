@@ -1,6 +1,6 @@
 package exceptions;
 
-public class TypeNotSupportedException extends Exception {
+public class TypeNotSupportedException extends DBAppException {
 
     public TypeNotSupportedException(){
         super();
