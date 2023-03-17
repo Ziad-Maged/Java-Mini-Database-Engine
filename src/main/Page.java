@@ -6,7 +6,7 @@ public class Page{
 
     private String name;
     private static int MAX_RECORDS_PER_PAGE;
-    private Vector<Hashtable<String, String>> records;
+    private Vector<Hashtable<String, Object>> records;
 
     //For creating a new page
     public Page(String name) {
@@ -21,11 +21,11 @@ public class Page{
             throw new RuntimeException(e);
         }
         this.name = name;
-        records = new Vector<Hashtable<String, String>>(MAX_RECORDS_PER_PAGE);
+        records = new Vector<Hashtable<String, Object>>(MAX_RECORDS_PER_PAGE);
     }
 
     //For loading a preexisting page
-    public Page(Vector<Hashtable<String, String>> records){
+    public Page(Vector<Hashtable<String, Object>> records){
         this.records = records;
         FileReader reader = null;
         try {
@@ -51,7 +51,7 @@ public class Page{
         return MAX_RECORDS_PER_PAGE;
     }
 
-    public Vector<Hashtable<String, String>> getRecords(){
+    public Vector<Hashtable<String, Object>> getRecords(){
         return records;
     }
 

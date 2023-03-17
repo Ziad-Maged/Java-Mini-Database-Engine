@@ -6,11 +6,11 @@ public class PageDetails {
 
     private String pageName;
     private int pageID;
-    private Hashtable<String, String> minimumRecord;
-    private Hashtable<String, String> maximumRecord;
+    private Hashtable<String, Object> minimumRecord;
+    private Hashtable<String, Object> maximumRecord;
 
-    public PageDetails(String pageName, int pageID, Hashtable<String, String> minimumRecord,
-                       Hashtable<String, String> maximumRecord){
+    public PageDetails(String pageName, int pageID, Hashtable<String, Object> minimumRecord,
+                       Hashtable<String, Object> maximumRecord){
         this.pageName = pageName;
         this.pageID = pageID;
         this.minimumRecord = minimumRecord;
@@ -25,19 +25,19 @@ public class PageDetails {
         return pageID;
     }
 
-    public Hashtable<String, String> getMinimumRecord(){
+    public Hashtable<String, Object> getMinimumRecord(){
         return minimumRecord;
     }
 
-    public void setMinimumRecord(Hashtable<String, String> minimumRecord){
+    public void setMinimumRecord(Hashtable<String, Object> minimumRecord){
         this.minimumRecord = minimumRecord;
     }
 
-    public Hashtable<String, String> getMaximumRecord(){
+    public Hashtable<String, Object> getMaximumRecord(){
         return maximumRecord;
     }
 
-    public void setMaximumRecord(Hashtable<String, String> maximumRecord){
+    public void setMaximumRecord(Hashtable<String, Object> maximumRecord){
         this.maximumRecord = maximumRecord;
     }
 
