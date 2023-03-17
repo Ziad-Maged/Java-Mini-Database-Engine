@@ -45,7 +45,7 @@ public class DBApp {
     public void createTable(String strTableName, String strClusteringKeyColumn,
                             Hashtable<String, String> htblColNameType,
                             Hashtable<String, String> htblColNameMin,
-                            Hashtable<String, String> htblColNameMax) throws DBAppException, TypeNotSupportedException {
+                            Hashtable<String, String> htblColNameMax) throws DBAppException{
         for(String e : htblColNameType.values()) {
             if(!e.equals("java.lang.Integer") && !e.equals("java.lang.Double") &&
                     !e.equals("java.lang.Date") && !e.equals("java.lang.String")) {

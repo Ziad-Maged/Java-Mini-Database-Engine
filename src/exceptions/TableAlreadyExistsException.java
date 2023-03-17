@@ -1,6 +1,6 @@
 package exceptions;
 
-public class TableAlreadyExistsException extends DBAppException {
+public class TableAlreadyExistsException extends DBAppException{
 
     public TableAlreadyExistsException(){
         super();
