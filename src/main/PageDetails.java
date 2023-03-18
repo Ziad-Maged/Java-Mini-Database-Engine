@@ -8,6 +8,7 @@ public class PageDetails {
     private int pageID;
     private Hashtable<String, Object> minimumRecord;
     private Hashtable<String, Object> maximumRecord;
+    private boolean full;
 
     public PageDetails(String pageName, int pageID, Hashtable<String, Object> minimumRecord,
                        Hashtable<String, Object> maximumRecord){
@@ -15,6 +16,7 @@ public class PageDetails {
         this.pageID = pageID;
         this.minimumRecord = minimumRecord;
         this.maximumRecord = maximumRecord;
+        full = false;
     }
 
     public String getPageName(){
@@ -39,6 +41,14 @@ public class PageDetails {
 
     public void setMaximumRecord(Hashtable<String, Object> maximumRecord){
         this.maximumRecord = maximumRecord;
+    }
+
+    public boolean isFull(){
+        return full;
+    }
+
+    public void setFull(boolean full){
+        this.full = full;
     }
 
 }
