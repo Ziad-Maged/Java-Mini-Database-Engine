@@ -62,8 +62,7 @@ public class Table implements Serializable{
         }
     }
 
-    public void insert(String strClustringKey,
-                       Hashtable<String, String> htblColNameType, Hashtable<String,Object> htblColNameValue){
+    public void insert(String strClustringKey, Hashtable<String,Object> htblColNameValue){
         //TODO LATER
     }
 
