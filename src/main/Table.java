@@ -62,15 +62,16 @@ public class Table implements Serializable{
         }
     }
 
-    public void insert(Hashtable<String, String> htblColNameType, Hashtable<String,Object> htblColNameValue){
-
+    public void insert(String strClustringKey,
+                       Hashtable<String, String> htblColNameType, Hashtable<String,Object> htblColNameValue){
+        //TODO LATER
     }
 
     public void delete(String strClusteringKeyValue, Hashtable<String,Object> htblColNameValue){
-
+        //TODO LATER
     }
 
     public void update(String strClusteringKeyValue, Hashtable<String,Object> htblColNameValue){
-
+        //TODO LATER
     }
 }
