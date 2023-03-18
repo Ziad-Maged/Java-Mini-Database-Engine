@@ -62,7 +62,7 @@ public class Table implements Serializable{
         }
     }
 
-    public void insert(Hashtable<String,Object> htblColNameValue){
+    public void insert(Hashtable<String, String> htblColNameType, Hashtable<String,Object> htblColNameValue){
 
     }
 
