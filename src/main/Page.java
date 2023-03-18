@@ -7,9 +7,10 @@ public class Page{
     private String name;
     private static int MAX_RECORDS_PER_PAGE;
     private Vector<Hashtable<String, Object>> records;
+    private int id;
 
     //For creating a new page
-    public Page(String name) {
+    public Page(String name, int id) {
         FileReader reader = null;
         try {
             reader = new FileReader(".\\resources\\DBApp.config");
@@ -21,6 +22,7 @@ public class Page{
             throw new RuntimeException(e);
         }
         this.name = name;
+        this.id = id;
         records = new Vector<Hashtable<String, Object>>(MAX_RECORDS_PER_PAGE);
     }
 
@@ -57,6 +59,10 @@ public class Page{
 
     public boolean isFull() {
         return records.size() == MAX_RECORDS_PER_PAGE;
+    }
+
+    public int getId(){
+        return id;
     }
 
     public void savePage(String path) {
