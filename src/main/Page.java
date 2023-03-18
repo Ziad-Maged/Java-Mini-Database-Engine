@@ -67,7 +67,7 @@ public class Page{
 
     public void savePage(String path) {
         try{
-            FileOutputStream fileOut = new FileOutputStream(path + "\\" + name);
+            FileOutputStream fileOut = new FileOutputStream(path + "\\" + name + ".class");
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
             out.writeObject(records);
             fileOut.close();
