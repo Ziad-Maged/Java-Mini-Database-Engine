@@ -93,7 +93,7 @@ public class DBApp {
     }
 
     public void createIndex(String strTableName, String[] strarrColName) throws DBAppException{
-        //TODO LATER
+        //TODO IN MILESTONE TWO
     }
 
     public void insertIntoTable(String strTableName,
