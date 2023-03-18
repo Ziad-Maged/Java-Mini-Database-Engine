@@ -21,8 +21,8 @@ public class Page{
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        this.name = name;
         this.id = id;
+        this.name = name + "_" + id;
         records = new Vector<Hashtable<String, Object>>(MAX_RECORDS_PER_PAGE);
     }
 
@@ -75,5 +75,9 @@ public class Page{
         }catch(Exception e){
             System.out.println(e.getMessage());
         }
+    }
+
+    public void insertRecord(String strClustringKey, Hashtable<String, Object> htblColNameValue){
+
     }
 }
