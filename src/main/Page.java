@@ -65,6 +65,10 @@ public class Page{
         return id;
     }
 
+    public void setId(int id){
+        this.id = id;
+    }
+
     public void savePage(String path) {
         try{
             FileOutputStream fileOut = new FileOutputStream(path + "\\" + name + ".class");
