@@ -38,7 +38,7 @@ public class Table implements Serializable{
 
     public void saveTable(String filePath){
         try{
-            FileOutputStream fileOut = new FileOutputStream(filePath + "\\" + this.tableName);
+            FileOutputStream fileOut = new FileOutputStream(filePath + "\\" + this.tableName + ".class");
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
             out.writeObject(this);
             fileOut.close();

@@ -87,6 +87,8 @@ public class DBApp {
                 writer.writeNext(header);
             }
             writer.close();
+            Table table = new Table(strTableName);
+            table.saveTable(".\\" + strCurrentDatabaseName);
         }catch(Exception e) {
             System.out.println(e.getMessage());
         }
