@@ -19,7 +19,7 @@ public class Table implements Serializable{
         return tableName;
     }
 
-    public ArrayList<PageDetails> getContent() {
+    public ArrayList<PageDetails> getDetails() {
         return details;
     }
 
