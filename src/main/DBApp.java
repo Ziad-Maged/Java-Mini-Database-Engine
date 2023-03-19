@@ -134,7 +134,14 @@ public class DBApp {
         table = (Table) in.readObject();
         fileIn.close();
         in.close();
-        table.insert(strClustringKey, htblColNameValue);
+        if(table.getNumberOfRecords() == 0 && table.getNumberOfPages() == 0){
+            table.setNumberOfPages(table.getNumberOfPages() + 1);
+            table.setNumberOfRecords(table.getNumberOfRecords() + 1);
+            Page page = new Page(table.getTableName(), table.getNumberOfPages());
+            table.addNewPage(".\\" + strCurrentDatabaseName, page);
+        }else{
+            table.insert(strClustringKey, htblColNameValue);
+        }
         table.saveTable(".\\" + strCurrentDatabaseName);
     }
 

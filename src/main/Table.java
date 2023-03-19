@@ -27,13 +27,20 @@ public class Table implements Serializable{
         return numberOfRecords;
     }
 
+    public void setNumberOfRecords(int numberOfRecords){
+        this.numberOfRecords = numberOfRecords;
+    }
+
+    public void setNumberOfPages(int numberOfPages){
+        this.numberOfPages = numberOfPages;
+    }
+
     public int getNumberOfPages(){
         return numberOfPages;
     }
 
-    public void addNewPage(Page page, String path){
-        details.add(new PageDetails(page.getName(), ++numberOfPages, page.getRecords().get(0), null));
-        numberOfRecords++;
+    public void addNewPage(String path, Page page){
+        details.add(new PageDetails(page.getName(), numberOfPages, page.getRecords().get(0), null));
         page.savePage(path);
     }
 
