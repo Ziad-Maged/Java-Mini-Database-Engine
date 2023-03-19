@@ -33,6 +33,7 @@ public class Table implements Serializable{
 
     public void addNewPage(Page page, String path){
         details.add(new PageDetails(page.getName(), ++numberOfPages, page.getRecords().get(0), null));
+        numberOfRecords++;
         page.savePage(path);
     }
 
