@@ -138,6 +138,7 @@ public class DBApp {
             table.setNumberOfPages(table.getNumberOfPages() + 1);
             table.setNumberOfRecords(table.getNumberOfRecords() + 1);
             Page page = new Page(table.getTableName(), table.getNumberOfPages());
+            page.getRecords().add(htblColNameValue);
             table.addNewPage(".\\" + strCurrentDatabaseName, page);
         }else{
             table.insert(strClustringKey, htblColNameValue);
