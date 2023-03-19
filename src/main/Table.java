@@ -64,7 +64,7 @@ public class Table implements Serializable{
     }
 
     public void insert(String strClustringKey, Hashtable<String,Object> htblColNameValue){
-        //TODO LATER
+
     }
 
     public void delete(String strClusteringKeyValue, Hashtable<String,Object> htblColNameValue){
