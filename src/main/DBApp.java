@@ -48,7 +48,7 @@ public class DBApp {
                             Hashtable<String, String> htblColNameMax) throws DBAppException{
         for(String e : htblColNameType.values()) {
             if(!e.equals("java.lang.Integer") && !e.equals("java.lang.Double") &&
-                    !e.equals("java.lang.Date") && !e.equals("java.lang.String")) {
+                    !e.equals("java.util.Date") && !e.equals("java.lang.String")) {
                 throw new TypeNotSupportedException(e + " is not a supported type.");
             }
         }
@@ -99,8 +99,43 @@ public class DBApp {
     }
 
     public void insertIntoTable(String strTableName,
-                                Hashtable<String, Object> htblColNameValue) throws DBAppException{
-        //TODO LATER
+                                Hashtable<String, Object> htblColNameValue) throws DBAppException, IOException, ClassNotFoundException {
+        Hashtable<String, String> htblColNameType = new Hashtable<>();
+        String strClustringKey = "";
+        BufferedReader br = new BufferedReader(new FileReader(".\\" + strCurrentDatabaseName +
+                "\\metadata.csv"));
+        String s = br.readLine();
+        while(s != null){
+            String[] header = s.split(",");
+            if(header[0].equals(strTableName)){
+                htblColNameType.put(header[1], header[2]);
+                if(header[3].equals("True"))
+                    strClustringKey = header[1];
+            }
+            s = br.readLine();
+        }
+        if(htblColNameType.size() < 1)
+            throw new TableDoesNotExistException(strTableName  + " table does not exist");
+        for(String e : htblColNameType.keySet()){
+            if((htblColNameType.get(e).equals("java.lang.Integer") &&
+                    !(htblColNameValue.get(e) instanceof Integer)) ||
+                    (htblColNameType.get(e).equals("java.lang.Double") &&
+                    !(htblColNameValue.get(e) instanceof Double)) ||
+                    (htblColNameType.get(e).equals("java.lang.String") &&
+                            !(htblColNameValue.get(e) instanceof String)) ||
+                    (htblColNameType.get(e).equals("java.util.Date") &&
+                            !(htblColNameValue.get(e) instanceof Date)))
+                throw new TypeMissMatchException(e + " is of type " + htblColNameType.get(e));
+        }
+        Table table;
+        FileInputStream fileIn = new FileInputStream(".\\" + strCurrentDatabaseName +
+                "\\" + strTableName + ".class");
+        ObjectInputStream in = new ObjectInputStream(fileIn);
+        table = (Table) in.readObject();
+        fileIn.close();
+        in.close();
+        table.insert(strClustringKey, htblColNameValue);
+        table.saveTable(".\\" + strCurrentDatabaseName);
     }
 
     public void updateTable(String strTableName,
