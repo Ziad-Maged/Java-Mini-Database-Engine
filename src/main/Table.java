@@ -70,6 +70,18 @@ public class Table implements Serializable{
         }
     }
 
+    private int compareWith(Object o, Object e){
+        if(o instanceof Integer && e instanceof Integer)
+            return ((Integer)o).compareTo((Integer)e);
+        else if(o instanceof Double && e instanceof Double)
+            return ((Double)o).compareTo((Double)e);
+        else if(o instanceof String && e instanceof String)
+            return ((String)o).compareTo((String)e);
+        else if(o instanceof Date && e instanceof Date)
+            return ((Date)o).compareTo((Date)e);
+        return 0;
+    }
+
     public void insert(String strClustringKey, Hashtable<String,Object> htblColNameValue){
 
     }
