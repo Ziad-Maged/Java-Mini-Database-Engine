@@ -4,13 +4,13 @@ import java.util.*;
 public class Table implements Serializable{
 
     private String tableName;
-    private ArrayList<PageDetails> details; //TODO Ask TAs about it.
+    private Vector<PageDetails> details; //TODO Ask TAs about it.
     private int numberOfRecords;
     private int numberOfPages;
 
     public Table(String tableName) {
         this.tableName = tableName;
-        details = new ArrayList<>();
+        details = new Vector<>();
         numberOfPages = 0;
         numberOfRecords = 0;
     }
@@ -19,7 +19,7 @@ public class Table implements Serializable{
         return tableName;
     }
 
-    public ArrayList<PageDetails> getDetails() {
+    public Vector<PageDetails> getDetails() {
         return details;
     }
 
