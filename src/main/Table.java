@@ -40,7 +40,7 @@ public class Table implements Serializable{
     }
 
     public void addNewPage(String path, Page page){
-        details.add(new PageDetails(page.getName(), numberOfPages, page.getRecords().get(0), null));
+        details.add(new PageDetails(page.getName(), numberOfPages, page.getRecords().get(0), page.getRecords().get(0)));
         page.savePage(path);
     }
 
