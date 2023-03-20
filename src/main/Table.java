@@ -4,13 +4,13 @@ import java.util.*;
 public class Table implements Serializable{
 
     private String tableName;
-    private ArrayList<PageDetails> details; //TODO Ask TAs about it.
+    private Vector<PageDetails> details; //TODO Ask TAs about it.
     private int numberOfRecords;
     private int numberOfPages;
 
     public Table(String tableName) {
         this.tableName = tableName;
-        details = new ArrayList<>();
+        details = new Vector<>();
         numberOfPages = 0;
         numberOfRecords = 0;
     }
@@ -19,7 +19,7 @@ public class Table implements Serializable{
         return tableName;
     }
 
-    public ArrayList<PageDetails> getDetails() {
+    public Vector<PageDetails> getDetails() {
         return details;
     }
 
@@ -40,7 +40,7 @@ public class Table implements Serializable{
     }
 
     public void addNewPage(String path, Page page){
-        details.add(new PageDetails(page.getName(), numberOfPages, page.getRecords().get(0), null));
+        details.add(new PageDetails(page.getName(), numberOfPages, page.getRecords().get(0), page.getRecords().get(0)));
         page.savePage(path);
     }
 
@@ -68,6 +68,18 @@ public class Table implements Serializable{
         }catch (Exception e1){
             return null;
         }
+    }
+
+    private int compareWith(Object o, Object e){
+        if(o instanceof Integer && e instanceof Integer)
+            return ((Integer)o).compareTo((Integer)e);
+        else if(o instanceof Double && e instanceof Double)
+            return ((Double)o).compareTo((Double)e);
+        else if(o instanceof String && e instanceof String)
+            return ((String)o).compareTo((String)e);
+        else if(o instanceof Date && e instanceof Date)
+            return ((Date)o).compareTo((Date)e);
+        return 0;
     }
 
     public void insert(String strClustringKey, Hashtable<String,Object> htblColNameValue){

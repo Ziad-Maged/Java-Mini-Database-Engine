@@ -58,7 +58,7 @@ public class Page{
     }
 
     public boolean isFull() {
-        return records.size() == MAX_RECORDS_PER_PAGE;
+        return records.size() >= MAX_RECORDS_PER_PAGE;
     }
 
     public int getId(){
