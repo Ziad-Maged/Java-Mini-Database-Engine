@@ -83,20 +83,7 @@ public class Table implements Serializable{
     }
 
     public void insert(String strClustringKey, Hashtable<String,Object> htblColNameValue){
-        boolean shift = false;
-        Page p = null;
-        Hashtable<String, Object> temp = null;
-        for(PageDetails e : details){
-            if(!shift){
-                int compareMin = compareWith(htblColNameValue.get(strClustringKey),
-                        e.getMinimumRecord().get(strClustringKey));
-                int compareMax = compareWith(htblColNameValue.get(strClustringKey),
-                        e.getMaximumRecord().get(strClustringKey));
 
-            }else {
-
-            }
-        }
     }
 
     public void delete(String strClusteringKeyValue, Hashtable<String,Object> htblColNameValue){
