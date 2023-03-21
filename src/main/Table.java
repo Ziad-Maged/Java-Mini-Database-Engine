@@ -122,9 +122,9 @@ public class Table implements Serializable{
                 //TODO Shifting process here
             }
         }
-        numberOfRecords++;
+        numberOfRecords++; // incrementing the number of records in the table after each successful insertion
         this.saveTable(".\\" + DBApp.getStrCurrentDatabaseName() +
-                "\\" + tableName + ".class");
+                "\\" + tableName + ".class"); // saving the details of the table after insertion
     }
 
     public void delete(String strClusteringKeyValue, Hashtable<String,Object> htblColNameValue){
