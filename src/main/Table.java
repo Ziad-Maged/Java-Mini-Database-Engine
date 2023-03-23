@@ -84,6 +84,8 @@ public class Table implements Serializable{
     }
 
     private int binarySearch(String strClustringKey, Vector<Hashtable<String, Object>> page){
+        int start = 0;
+        int end = page.size() - 1;
         //TODO Binary Search For Index Of Insertion
         return 0;
     }
