@@ -83,11 +83,23 @@ public class Table implements Serializable{
         return 0;
     }
 
-    private int binarySearch(String strClustringKey, Vector<Hashtable<String, Object>> page){
+    private int binarySearch(String strClustringKey, Hashtable<String, Object> record,
+                             Vector<Hashtable<String, Object>> page){
         int start = 0;
         int end = page.size() - 1;
-        //TODO Binary Search For Index Of Insertion
-        return 0;
+        int middle = (start + end) / 2;
+        while(start < end){
+            int comparison = compareWith(record.get(strClustringKey), page.get(middle).get(strClustringKey));
+            if(comparison == 1){
+                start = middle;
+            }else if(comparison == -1){
+                end = middle;
+            }else if(comparison == 0){
+                return middle;
+            }
+            middle = (start + end) / 2;
+        }
+        return middle;
     }
 
     public void insert(String strClustringKey, Hashtable<String,Object> htblColNameValue){
