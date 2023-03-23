@@ -4,7 +4,7 @@ import java.util.*;
 public class Table implements Serializable{
 
     private String tableName;
-    private Vector<PageDetails> details; //TODO Ask TAs about it.
+    private Vector<PageDetails> details;
     private int numberOfRecords;
     private int numberOfPages;
 
