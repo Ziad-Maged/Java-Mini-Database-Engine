@@ -83,6 +83,11 @@ public class Table implements Serializable{
         return 0;
     }
 
+    private int binarySearch(String strClustringKey, Vector<Hashtable<String, Object>> page){
+        //TODO Binary Search For Index Of Insertion
+        return 0;
+    }
+
     public void insert(String strClustringKey, Hashtable<String,Object> htblColNameValue){
         boolean shift = false; // boolean variable to indicate whether we need to shift or not
         Page p = null; // preparing a Page varialbe
