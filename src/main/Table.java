@@ -143,14 +143,44 @@ public class Table implements Serializable{
                         e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1)); // resetting the maximum record of the page to be the current last record of that page
                     }
                     int indexOfInsertion = binarySearch(strClustringKey, htblColNameValue, p.getRecords()); // get the index of insertion using binary search
-                    p.getRecords().insertElementAt(htblColNameValue, indexOfInsertion);
+                    p.getRecords().insertElementAt(htblColNameValue, indexOfInsertion); // inserting the element in the page at the specified index
                     e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1)); // redundant but just in case the index of insertion was the maximum itself.
                     if(p.isFull()) // checking if the page was not full before insertion and became full after insertion
                         e.setFull(true); // if true then we indicate that the page is now full and any further insertions in that page require shifting
                     p.savePage(".\\" + DBApp.getStrCurrentDatabaseName() +
                             "\\" + e.getPageName() + ".class"); // saving the page after the insertion process
                 }else if(compareMin == 1 && compareMax == 1){ // checking if the input is greater than the maximum
-
+                    if(e.isFull()) // if the page is already full, we skip this iteration and restart the loop
+                        continue; // skipping the iteration
+                    else { // if the page is not full
+                        int indexOfNextPage = details.indexOf(e) + 1; // finding the index of the next page
+                        if(!(indexOfNextPage >= details.size())){ // checking if the index of the next page is greater than the number of pages in the table, then the current page is the last page
+                            p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
+                                    "\\" + e.getPageName() + ".class"); //load the current page
+                            p.setName(e.getPageName()); // setting the name of the page
+                            p.getRecords().add(htblColNameValue); // inserting the input in the page
+                            e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1)); // updating the maximum since the input is greater than the maximum
+                            if(p.isFull()) // checking if the page is full after the insertion process
+                                e.setFull(true); // updating the status of the page after the insertion process makes the page full
+                            p.savePage(".\\" + DBApp.getStrCurrentDatabaseName() +
+                                    "\\" + e.getPageName() + ".class"); // saving the page after the insertion process
+                            break; // exiting out of the loop
+                        }
+                        int compareMin2 = compareWith(htblColNameValue.get(strClustringKey), details.get(indexOfNextPage).getMinimumRecord().get(strClustringKey)); // comparing the input with the minimum record of the next page
+                        if(compareMin2 == -1){ // checking if the input is greater than the maximum of the current page but less than the minimum of the next page
+                            p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
+                                    "\\" + e.getPageName() + ".class"); //load the current page
+                            p.setName(e.getPageName()); // setting the name of the page
+                            p.getRecords().add(htblColNameValue); // inserting the input in the page
+                            e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1)); // updating the maximum since the input is greater than the maximum
+                            if(p.isFull()) // checking if the page is full after the insertion process
+                                e.setFull(true); // updating the status of the page after the insertion process makes the page full
+                            p.savePage(".\\" + DBApp.getStrCurrentDatabaseName() +
+                                    "\\" + e.getPageName() + ".class"); // saving the page after the insertion process
+                            break; // exiting out of the loop
+                        }else // if it is not the case that the input is less than the minimum of the next page
+                            continue; // we skip the iteration because the input is greater than the minimum of the next page
+                    }
                 }
             }else {
                 //TODO Shifting process here
