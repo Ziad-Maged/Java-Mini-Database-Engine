@@ -132,10 +132,25 @@ public class Table implements Serializable{
                         e.setFull(true); // if true then we indicate that the page is now full and any further insertions in that page require shifting
                     p.savePage(".\\" + DBApp.getStrCurrentDatabaseName() +
                             "\\" + e.getPageName() + ".class"); // saving the page after the insertion process
-                }else if(compareMin == 1 && compareMax == -1){
-                    //TODO Binary Search to find the needed index of insertion
-                }else if(compareMin == 1 && compareMax == 1){
-                    //TODO check if the page is not full
+                }else if(compareMin == 1 && compareMax == -1){ // checking idf the input belongs to the current page
+                    p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
+                            "\\" + e.getPageName() + ".class"); //load the current page
+                    p.setName(e.getPageName());
+                    if(e.isFull()){ // checking if the page is already full
+                        shift = true; // setting the shift to true to start the shifting process
+                        temp = p.getRecords().get(p.getRecords().size() - 1); // setting the temp variable to be the maximum record of the page to shift it to the next page
+                        p.getRecords().remove(temp); // removing the last record from the page to maintain the maximum number of records per page
+                        e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1)); // resetting the maximum record of the page to be the current last record of that page
+                    }
+                    int indexOfInsertion = binarySearch(strClustringKey, htblColNameValue, p.getRecords()); // get the index of insertion using binary search
+                    p.getRecords().insertElementAt(htblColNameValue, indexOfInsertion);
+                    e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1)); // redundant but just in case the index of insertion was the maximum itself.
+                    if(p.isFull()) // checking if the page was not full before insertion and became full after insertion
+                        e.setFull(true); // if true then we indicate that the page is now full and any further insertions in that page require shifting
+                    p.savePage(".\\" + DBApp.getStrCurrentDatabaseName() +
+                            "\\" + e.getPageName() + ".class"); // saving the page after the insertion process
+                }else if(compareMin == 1 && compareMax == 1){ // checking if the input is greater than the maximum
+
                 }
             }else {
                 //TODO Shifting process here
