@@ -182,7 +182,7 @@ public class Table implements Serializable{
                             continue; // we skip the iteration because the input is greater than the minimum of the next page
                     }
                 }
-            }else {
+            }else { // if shifting must be done.
                 //TODO Shifting process here
             }
         }
