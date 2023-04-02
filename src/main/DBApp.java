@@ -1,5 +1,6 @@
 package main;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.opencsv.CSVWriter;
@@ -12,7 +13,8 @@ public class DBApp {
     private static String strCurrentDatabaseName;
 
     public void init() throws IOException {
-
+        createDatabase("Database");
+        selectDatabase("Database");
     }
     //creating directory
     public void createDatabase(String strDatabaseName) {
@@ -98,9 +100,42 @@ public class DBApp {
         //TODO IN MILESTONE TWO
     }
 
+    private void checkMinMaxInput(Hashtable<String, Object> htblColNameValue,
+                                  Hashtable<String, String> htblColNameMin,
+                                  Hashtable<String, String> htblColNameMax) throws DBAppException{
+        for(String e : htblColNameValue.keySet()){
+            if(htblColNameValue.get(e) instanceof Integer &&
+                    ((Integer)htblColNameValue.get(e)).compareTo(Integer.parseInt(htblColNameMin.get(e))) < 0
+            && ((Integer)htblColNameValue.get(e)).compareTo(Integer.parseInt(htblColNameMin.get(e))) > 0){
+                throw new InvalidInputException("The input value is less than the minimum or greater than the maximum");
+            }else if(htblColNameValue.get(e) instanceof Double &&
+                    ((Double)htblColNameValue.get(e)).compareTo(Double.parseDouble(htblColNameMin.get(e))) < 0
+                    && ((Double)htblColNameValue.get(e)).compareTo(Double.parseDouble(htblColNameMin.get(e))) > 0){
+                throw new InvalidInputException("The input value is less than the minimum or greater than the maximum");
+            }else if(htblColNameValue.get(e) instanceof String &&
+                    ((String)htblColNameValue.get(e)).compareTo(htblColNameMin.get(e)) < 0
+                    && ((String)htblColNameValue.get(e)).compareTo(htblColNameMin.get(e)) > 0){
+                throw new InvalidInputException("The input value is less than the minimum or greater than the maximum");
+            }else if(htblColNameValue.get(e) instanceof Date){
+                try{
+                    SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd");
+                    Date inputDate = (Date) htblColNameValue.get(e);
+                    Date minDate = formater.parse(htblColNameMin.get(e));
+                    Date maxDate = formater.parse(htblColNameMax.get(e));
+                    if(inputDate.compareTo(minDate) < 0 && inputDate.compareTo(maxDate) > 0)
+                        throw new InvalidInputException();
+                }catch(Exception e1){
+                    throw new InvalidInputException("Date not entered correctly");
+                }
+            }
+        }
+    }
+
     public void insertIntoTable(String strTableName,
                                 Hashtable<String, Object> htblColNameValue) throws DBAppException, IOException, ClassNotFoundException {
         Hashtable<String, String> htblColNameType = new Hashtable<>();
+        Hashtable<String, String> htblColNameMin = new Hashtable<>();
+        Hashtable<String, String> htblColNameMax = new Hashtable<>();
         String strClustringKey = "";
         BufferedReader br = new BufferedReader(new FileReader(".\\" + strCurrentDatabaseName +
                 "\\metadata.csv"));
@@ -109,6 +144,8 @@ public class DBApp {
             String[] header = s.split(",");
             if(header[0].equals(strTableName)){
                 htblColNameType.put(header[1], header[2]);
+                htblColNameMin.put(header[1], header[6]);
+                htblColNameMax.put(header[1], header[7]);
                 if(header[3].equals("True"))
                     strClustringKey = header[1];
             }
@@ -127,6 +164,7 @@ public class DBApp {
                             !(htblColNameValue.get(e) instanceof Date)))
                 throw new TypeMissMatchException(e + " is of type " + htblColNameType.get(e));
         }
+        checkMinMaxInput(htblColNameValue, htblColNameMin, htblColNameMax);
         Table table;
         FileInputStream fileIn = new FileInputStream(".\\" + strCurrentDatabaseName +
                 "\\" + strTableName + ".class");
@@ -135,8 +173,8 @@ public class DBApp {
         fileIn.close();
         in.close();
         if(table.getNumberOfRecords() == 0 && table.getNumberOfPages() == 0){
-            table.setNumberOfPages(table.getNumberOfPages() + 1);
-            table.setNumberOfRecords(table.getNumberOfRecords() + 1);
+            table.setNumberOfPages(1);
+            table.setNumberOfRecords(1);
             Page page = new Page(table.getTableName(), table.getNumberOfPages());
             page.getRecords().add(htblColNameValue);
             table.addNewPage(".\\" + strCurrentDatabaseName, page);
@@ -165,58 +203,71 @@ public class DBApp {
         return strCurrentDatabaseName;
     }
 
-	public static void main(String[] args) {
-		DBApp app = new DBApp();
-		app.createDatabase("ThisTestRun");
-		app.selectDatabase("ThisTestRun");
-		System.out.println(DBApp.getStrCurrentDatabaseName());
 
-		Hashtable<String, String> htblColNameType = new Hashtable<>();
-		htblColNameType.put("name", "java.lang.String");
-		htblColNameType.put("gpa", "java.lang.Double");
-		htblColNameType.put("id", "java.lang.Integer");
+    public static void main(String[] args) throws Exception {
+        DBApp app = new DBApp();
+        app.init();
+        Hashtable<String, String> htblColNameType = new Hashtable<>();
+        Hashtable<String, String> htblColNameMin = new Hashtable<>();
+        Hashtable<String, String> htblColNameMax = new Hashtable<>();
+        htblColNameType.put("id", "java.lang.Integer");
+        htblColNameMin.put("id", "1");
+        htblColNameMax.put("id", "1000");
+        app.createTable("Test1", "id", htblColNameType, htblColNameMin, htblColNameMax);
 
-		Hashtable<String, String> htblColNameMin = new Hashtable<>();
-		htblColNameMin.put("name", "A");
-		htblColNameMin.put("gpa", "0");
-		htblColNameMin.put("id", "0");
+        Hashtable<String, Object> htblColNameValue = new Hashtable<>();
+        htblColNameValue.put("id", 1);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 10);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 5);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 7);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 50);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 28);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 22);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 81);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 20);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 21);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 80);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 30);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 23);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 24);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 33);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
 
-		Hashtable<String, String> htblColNameMax = new Hashtable<>();
-		htblColNameMax.put("name", "ZZZZZZZZZZZZZZZ");
-		htblColNameMax.put("gpa", "10000000");
-		htblColNameMax.put("id", "1000000");
-
-		try {
-			app.createTable("Table1", "id", htblColNameType, htblColNameMin, htblColNameMax);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		//-----------------------
-		htblColNameType.clear();
-		htblColNameType.put("taker", "java.lang.String");
-		htblColNameType.put("allowance", "java.lang.Double");
-		htblColNameType.put("id", "java.lang.Integer");
-
-		htblColNameMin.put("taker", "A");
-		htblColNameMin.put("allowance", "0");
-		htblColNameMin.put("id", "0");
-
-		htblColNameMax.put("taker", "ZZZZZZZZZZZZZZZ");
-		htblColNameMax.put("allowance", "10000000");
-		htblColNameMax.put("id", "1000000");
-
-		try {
-			app.createTable("Table2", "id", htblColNameType, htblColNameMin, htblColNameMax);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-//    public static void main(String[] args) {
-//        Page page = new Page("test");
-//    }
+        FileInputStream fileIn = new FileInputStream(".\\" + strCurrentDatabaseName + "\\Test1.class");
+        ObjectInputStream in = new ObjectInputStream(fileIn);
+        Table t = (Table) in.readObject();
+        fileIn.close();
+        in.close();
+        System.out.println(t);
+    }
 
 }

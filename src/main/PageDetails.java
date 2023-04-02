@@ -1,8 +1,9 @@
 package main;
 
+import java.io.Serializable;
 import java.util.Hashtable;
 
-public class PageDetails {
+public class PageDetails implements Serializable {
 
     private String pageName;
     private int pageID;
@@ -49,6 +50,10 @@ public class PageDetails {
 
     public void setFull(boolean full){
         this.full = full;
+    }
+
+    public String toString(){
+        return "[ " + pageName + ", " + minimumRecord + ", " + maximumRecord + " ]";
     }
 
 }
