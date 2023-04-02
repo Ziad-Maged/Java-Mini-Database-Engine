@@ -166,55 +166,6 @@ public class DBApp {
         return strCurrentDatabaseName;
     }
 
-//	public static void main(String[] args) {
-//		DBApp app = new DBApp();
-//		app.createDatabase("ThisTestRun");
-//		app.selectDatabase("ThisTestRun");
-//		System.out.println(DBApp.getStrCurrentDatabaseName());
-//
-//		Hashtable<String, String> htblColNameType = new Hashtable<>();
-//		htblColNameType.put("name", "java.lang.String");
-//		htblColNameType.put("gpa", "java.lang.Double");
-//		htblColNameType.put("id", "java.lang.Integer");
-//
-//		Hashtable<String, String> htblColNameMin = new Hashtable<>();
-//		htblColNameMin.put("name", "A");
-//		htblColNameMin.put("gpa", "0");
-//		htblColNameMin.put("id", "0");
-//
-//		Hashtable<String, String> htblColNameMax = new Hashtable<>();
-//		htblColNameMax.put("name", "ZZZZZZZZZZZZZZZ");
-//		htblColNameMax.put("gpa", "10000000");
-//		htblColNameMax.put("id", "1000000");
-//
-//		try {
-//			app.createTable("Table1", "id", htblColNameType, htblColNameMin, htblColNameMax);
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//
-//		//-----------------------
-//		htblColNameType.clear();
-//		htblColNameType.put("taker", "java.lang.String");
-//		htblColNameType.put("allowance", "java.lang.Double");
-//		htblColNameType.put("id", "java.lang.Integer");
-//
-//		htblColNameMin.put("taker", "A");
-//		htblColNameMin.put("allowance", "0");
-//		htblColNameMin.put("id", "0");
-//
-//		htblColNameMax.put("taker", "ZZZZZZZZZZZZZZZ");
-//		htblColNameMax.put("allowance", "10000000");
-//		htblColNameMax.put("id", "1000000");
-//
-//		try {
-//			app.createTable("Table2", "id", htblColNameType, htblColNameMin, htblColNameMax);
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
 
     public static void main(String[] args) throws Exception {
         DBApp app = new DBApp();
