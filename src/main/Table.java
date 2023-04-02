@@ -93,7 +93,7 @@ public class Table implements Serializable{
             if(comparison == 1){
                 start = middle + 1;
             }else if(comparison == -1){
-                end = middle - 1;
+                end = middle;
             }else if(comparison == 0){
                 return middle;
             }
@@ -135,15 +135,14 @@ public class Table implements Serializable{
                     p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                             "\\" + e.getPageName() + ".class"); //load the current page
                     p.setName(e.getPageName());
+                    int indexOfInsertion = binarySearch(strClustringKey, htblColNameValue, p.getRecords()); // get the index of insertion using binary search
                     if(e.isFull()){ // checking if the page is already full
                         shift = true; // setting the shift to true to start the shifting process
                         temp = p.getRecords().get(p.getRecords().size() - 1); // setting the temp variable to be the maximum record of the page to shift it to the next page
                         p.getRecords().remove(temp); // removing the last record from the page to maintain the maximum number of records per page
-                        e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1)); // resetting the maximum record of the page to be the current last record of that page
                     }
-                    int indexOfInsertion = binarySearch(strClustringKey, htblColNameValue, p.getRecords()); // get the index of insertion using binary search
                     p.getRecords().insertElementAt(htblColNameValue, indexOfInsertion); // inserting the element in the page at the specified index
-                    e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1)); // redundant but just in case the index of insertion was the maximum itself.
+                    e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1)); // resetting the maximum record of the page to be the current last record of that page
                     if(p.isFull()) // checking if the page was not full before insertion and became full after insertion
                         e.setFull(true); // if true then we indicate that the page is now full and any further insertions in that page require shifting
                     p.savePage(".\\" + DBApp.getStrCurrentDatabaseName()); // saving the page after the insertion process
@@ -194,6 +193,7 @@ public class Table implements Serializable{
                 }else { // if the page in question is also empty, same process with minor differences
                     p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                             "\\" + e.getPageName() + ".class"); //load the current page
+                    p.setName(e.getPageName());
                     p.getRecords().insertElementAt(temp, 0); // inserting the maximum of the previous page as the minimum in the next page
                     e.setMinimumRecord(p.getRecords().get(0)); // updating the minimum of the current Page Detail in question
                     temp = p.getRecords().get(p.getRecords().size() - 1); // updating the temp to be the maximum of the current page in question to continue the shifting process
