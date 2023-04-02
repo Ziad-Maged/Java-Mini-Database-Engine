@@ -1,4 +1,6 @@
 package main;
+import exceptions.InvalidInputException;
+
 import java.io.*;
 import java.util.*;
 public class Table implements Serializable{
@@ -84,7 +86,7 @@ public class Table implements Serializable{
     }
 
     private int binarySearch(String strClustringKey, Hashtable<String, Object> record,
-                             Vector<Hashtable<String, Object>> page){
+                             Vector<Hashtable<String, Object>> page) throws InvalidInputException {
         int start = 0;
         int end = page.size() - 1;
         int middle = (start + end) / 2;
@@ -95,14 +97,14 @@ public class Table implements Serializable{
             }else if(comparison == -1){
                 end = middle;
             }else if(comparison == 0){
-                return middle;
+                throw new InvalidInputException("Clustring Key already exists");
             }
             middle = (start + end) / 2;
         }
         return middle;
     }
 
-    public void insert(String strClustringKey, Hashtable<String,Object> htblColNameValue){
+    public void insert(String strClustringKey, Hashtable<String,Object> htblColNameValue) throws InvalidInputException {
         boolean shift = false; // boolean variable to indicate whether we need to shift or not
         Page p = null; // preparing a Page variable
         /*
