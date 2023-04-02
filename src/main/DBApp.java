@@ -136,8 +136,8 @@ public class DBApp {
         fileIn.close();
         in.close();
         if(table.getNumberOfRecords() == 0 && table.getNumberOfPages() == 0){
-            table.setNumberOfPages(table.getNumberOfPages() + 1);
-            table.setNumberOfRecords(table.getNumberOfRecords() + 1);
+            table.setNumberOfPages(1);
+            table.setNumberOfRecords(1);
             Page page = new Page(table.getTableName(), table.getNumberOfPages());
             page.getRecords().add(htblColNameValue);
             table.addNewPage(".\\" + strCurrentDatabaseName, page);
@@ -226,6 +226,24 @@ public class DBApp {
         htblColNameMin.put("id", "1");
         htblColNameMax.put("id", "1000");
         app.createTable("Test1", "id", htblColNameType, htblColNameMin, htblColNameMax);
+
+        Hashtable<String, Object> htblColNameValue = new Hashtable<>();
+        htblColNameValue.put("id", 1);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 10);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 5);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+
+        FileInputStream fileIn = new FileInputStream(".\\" + strCurrentDatabaseName + "\\Test1.class");
+        ObjectInputStream in = new ObjectInputStream(fileIn);
+        Table t = (Table) in.readObject();
+        fileIn.close();
+        in.close();
+        System.out.println(t);
     }
 
 }

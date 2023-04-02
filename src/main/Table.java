@@ -165,7 +165,8 @@ public class Table implements Serializable{
                             p.savePage(".\\" + DBApp.getStrCurrentDatabaseName() +
                                     "\\" + e.getPageName() + ".class"); // saving the page after the insertion process
                             break; // exiting out of the loop
-                        }
+                        }else
+                            indexOfNextPage--;
                         int compareMin2 = compareWith(htblColNameValue.get(strClustringKey), details.get(indexOfNextPage).getMinimumRecord().get(strClustringKey)); // comparing the input with the minimum record of the next page
                         if(compareMin2 == -1){ // checking if the input is greater than the maximum of the current page but less than the minimum of the next page
                             p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
@@ -186,6 +187,7 @@ public class Table implements Serializable{
                 if(!e.isFull()){ // if the page in question is not full then the shifting stops here
                     p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                             "\\" + e.getPageName() + ".class"); //load the current page
+                    p.setName(e.getPageName());
                     p.getRecords().insertElementAt(temp, 0); // inserting the maximum of the previous page as the minimum in the next page
                     e.setMinimumRecord(p.getRecords().get(0)); // updating the minimum of the current Page Detail in question
                     if(p.isFull()) // checking if the page is full after insertion
@@ -224,5 +226,15 @@ public class Table implements Serializable{
 
     public void update(String strClusteringKeyValue, Hashtable<String,Object> htblColNameValue){
         //TODO LATER
+    }
+
+    public String toString(){
+        String result = tableName + ":\n";
+        for(PageDetails e : details){
+            Page p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
+                    "\\" + e.getPageName() + ".class");
+            result += p.toString() + "\n";
+        }
+        return result;
     }
 }

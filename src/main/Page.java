@@ -84,4 +84,8 @@ public class Page{
     public void insertRecord(String strClustringKey, Hashtable<String, Object> htblColNameValue){
 
     }
+
+    public String toString(){
+        return "page " + id + ": " + records.toString();
+    }
 }
