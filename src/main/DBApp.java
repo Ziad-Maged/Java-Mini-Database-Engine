@@ -264,6 +264,15 @@ public class DBApp {
         htblColNameValue.put("id", 30);
         app.insertIntoTable("Test1", htblColNameValue);
         htblColNameValue.clear();
+        htblColNameValue.put("id", 23);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 24);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 33);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
 
         FileInputStream fileIn = new FileInputStream(".\\" + strCurrentDatabaseName + "\\Test1.class");
         ObjectInputStream in = new ObjectInputStream(fileIn);
