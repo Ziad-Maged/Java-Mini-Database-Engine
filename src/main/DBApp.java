@@ -118,10 +118,10 @@ public class DBApp {
                 throw new InvalidInputException("The input value is less than the minimum or greater than the maximum");
             }else if(htblColNameValue.get(e) instanceof Date){
                 try{
-                    SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd");
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
                     Date inputDate = (Date) htblColNameValue.get(e);
-                    Date minDate = formater.parse(htblColNameMin.get(e));
-                    Date maxDate = formater.parse(htblColNameMax.get(e));
+                    Date minDate = formatter.parse(htblColNameMin.get(e));
+                    Date maxDate = formatter.parse(htblColNameMax.get(e));
                     if(inputDate.compareTo(minDate) < 0 && inputDate.compareTo(maxDate) > 0)
                         throw new InvalidInputException();
                 }catch(Exception e1){
