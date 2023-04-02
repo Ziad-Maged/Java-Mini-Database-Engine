@@ -183,8 +183,35 @@ public class Table implements Serializable{
                     }
                 }
             }else { // if shifting must be done.
-                //TODO Shifting process here
+                if(!e.isFull()){ // if the page in question is not full then the shifting stops here
+                    p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
+                            "\\" + e.getPageName() + ".class"); //load the current page
+                    p.getRecords().insertElementAt(temp, 0); // inserting the maximum of the previous page as the minimum in the next page
+                    e.setMinimumRecord(p.getRecords().get(0)); // updating the minimum of the current Page Detail in question
+                    if(p.isFull()) // checking if the page is full after insertion
+                        e.setFull(true); // updating the page's details to be true the next time we check if it is full
+                    p.savePage(".\\" + DBApp.getStrCurrentDatabaseName() +
+                            "\\" + e.getPageName() + ".class"); // saving the page after the insertion process
+                    temp = null; // setting the temp to null to check if the last page was full or not.
+                    break; // exiting out of the loop immediately after
+                }else { // if the page in question is also empty, same process with minor differences
+                    p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
+                            "\\" + e.getPageName() + ".class"); //load the current page
+                    p.getRecords().insertElementAt(temp, 0); // inserting the maximum of the previous page as the minimum in the next page
+                    e.setMinimumRecord(p.getRecords().get(0)); // updating the minimum of the current Page Detail in question
+                    temp = p.getRecords().get(p.getRecords().size() - 1); // updating the temp to be the maximum of the current page in question to continue the shifting process
+                    p.getRecords().remove(p.getRecords().size() - 1); // removing the old maximum in the page
+                    e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1)); // updating the detail of the page by setting the maximum to the current maimum in the page
+                    p.savePage(".\\" + DBApp.getStrCurrentDatabaseName() +
+                            "\\" + e.getPageName() + ".class"); // saving the page after the insertion process
+                }
             }
+        }
+        if(temp != null){ // if the temp is not null then the last page was also full, and we need to continue insertion
+            numberOfPages++; // incrementing the number of pages by one
+            p = new Page(tableName, numberOfPages); // creating the new page
+            p.getRecords().add(temp); // inserting the maximum of the last page in the table as the minimum in the new page
+            addNewPage(".\\" + DBApp.getStrCurrentDatabaseName(), p); // adding the new page to the table's details and saving it
         }
         numberOfRecords++; // incrementing the number of records in the table after each successful insertion
         this.saveTable(".\\" + DBApp.getStrCurrentDatabaseName() +
