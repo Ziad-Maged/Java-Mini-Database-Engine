@@ -91,9 +91,9 @@ public class Table implements Serializable{
         while(start < end){
             int comparison = compareWith(record.get(strClustringKey), page.get(middle).get(strClustringKey));
             if(comparison == 1){
-                start = middle;
+                start = middle + 1;
             }else if(comparison == -1){
-                end = middle;
+                end = middle - 1;
             }else if(comparison == 0){
                 return middle;
             }
