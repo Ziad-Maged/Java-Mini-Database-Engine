@@ -226,7 +226,8 @@ public class Table implements Serializable{
         //TODO LATER
     }
 
-    public void update(Object objClusteringKeyValue, Hashtable<String,Object> htblColNameValue){
+    public void update(String strClustringKey, Object objClusteringKeyValue,
+                       Hashtable<String,Object> htblColNameValue){
         //TODO LATER
     }
 

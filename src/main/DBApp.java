@@ -220,7 +220,6 @@ public class DBApp {
         if(strClusteringKeyValue == null || strClusteringKeyValue.equals(""))
             throw new InvalidInputException("Clustring Key value should not be empty");
         Object[] parameters = getTableDetails(strTableName, htblColNameValue, strClusteringKeyValue);
-        String strClustringKey = (String) parameters[0];
         checkMinMaxInput(htblColNameValue, (Hashtable<String, String>) parameters[1],
                 (Hashtable<String, String>) parameters[2]);
         Table table;
@@ -230,7 +229,7 @@ public class DBApp {
         table = (Table) in.readObject();
         fileIn.close();
         in.close();
-        table.update(parameters[3], htblColNameValue);
+        table.update(parameters[0].toString(), parameters[3], htblColNameValue);
     }
 
     public void deleteFromTable(String strTableName, Hashtable<String,Object> htblColNameValue) throws DBAppException{
