@@ -132,7 +132,8 @@ public class DBApp {
     }
 
     private Object[] getTableDetails(String strTableName,
-                                     Hashtable<String, Object> htblColNameValue) throws DBAppException, IOException {
+                                     Hashtable<String, Object> htblColNameValue,
+                                     String strClustringKeyValue) throws DBAppException, IOException {
         Object[] result = new Object[3];
         Hashtable<String, String> htblColNameType = new Hashtable<>();
         Hashtable<String, String> htblColNameMin = new Hashtable<>();
@@ -173,7 +174,7 @@ public class DBApp {
 
     public void insertIntoTable(String strTableName,
                                 Hashtable<String, Object> htblColNameValue) throws DBAppException, IOException, ClassNotFoundException {
-        Object[] parameters = getTableDetails(strTableName, htblColNameValue);
+        Object[] parameters = getTableDetails(strTableName, htblColNameValue, null);
         String strClustringKey = (String) parameters[0];
         checkMinMaxInput(htblColNameValue, (Hashtable<String, String>) parameters[1],
                 (Hashtable<String, String>) parameters[2]);
@@ -199,7 +200,7 @@ public class DBApp {
     public void updateTable(String strTableName,
                             String strClusteringKeyValue,
                             Hashtable<String,Object> htblColNameValue) throws DBAppException, IOException, ClassNotFoundException {
-        Object[] parameters = getTableDetails(strTableName, htblColNameValue);
+        Object[] parameters = getTableDetails(strTableName, htblColNameValue, strClusteringKeyValue);
         String strClustringKey = (String) parameters[0];
         checkMinMaxInput(htblColNameValue, (Hashtable<String, String>) parameters[1],
                 (Hashtable<String, String>) parameters[2]);
