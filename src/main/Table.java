@@ -10,6 +10,8 @@ public class Table implements Serializable{
     private int numberOfRecords;
     private int numberOfPages;
 
+    private transient boolean inserting;
+
     public Table(String tableName) {
         this.tableName = tableName;
         details = new Vector<>();
@@ -97,7 +99,10 @@ public class Table implements Serializable{
             }else if(comparison == -1){
                 end = middle;
             }else if(comparison == 0){
-                throw new InvalidInputException("Clustring Key already exists");
+                if(inserting)
+                    throw new InvalidInputException("Clustring Key already exists");
+                else
+                    return middle;
             }
             middle = (start + end) / 2;
         }
@@ -105,6 +110,7 @@ public class Table implements Serializable{
     }
 
     public void insert(String strClustringKey, Hashtable<String,Object> htblColNameValue) throws InvalidInputException {
+        inserting = true; // to indicate that the table is currently inserting a value
         boolean shift = false; // boolean variable to indicate whether we need to shift or not
         Page p = null; // preparing a Page variable
         /*
@@ -136,7 +142,7 @@ public class Table implements Serializable{
                 }else if(compareMin == 1 && compareMax == -1){ // checking idf the input belongs to the current page
                     p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                             "\\" + e.getPageName() + ".class"); //load the current page
-                    p.setName(e.getPageName());
+                    p.setName(e.getPageName()); // setting the name of the page
                     int indexOfInsertion = binarySearch(strClustringKey, htblColNameValue, p.getRecords()); // get the index of insertion using binary search
                     if(e.isFull()){ // checking if the page is already full
                         shift = true; // setting the shift to true to start the shifting process
@@ -164,7 +170,7 @@ public class Table implements Serializable{
                             p.savePage(".\\" + DBApp.getStrCurrentDatabaseName()); // saving the page after the insertion process
                             break; // exiting out of the loop
                         }else
-                            indexOfNextPage--;
+                            indexOfNextPage--; // in case the current page is the last page.
                         int compareMin2 = compareWith(htblColNameValue.get(strClustringKey), details.get(indexOfNextPage).getMinimumRecord().get(strClustringKey)); // comparing the input with the minimum record of the next page
                         if(compareMin2 == 1){ // checking if the input is greater than the maximum of the current page but less than the minimum of the next page
                             p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
@@ -184,7 +190,7 @@ public class Table implements Serializable{
                 if(!e.isFull()){ // if the page in question is not full then the shifting stops here
                     p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                             "\\" + e.getPageName() + ".class"); //load the current page
-                    p.setName(e.getPageName());
+                    p.setName(e.getPageName()); // setting the name of the page
                     p.getRecords().insertElementAt(temp, 0); // inserting the maximum of the previous page as the minimum in the next page
                     e.setMinimumRecord(p.getRecords().get(0)); // updating the minimum of the current Page Detail in question
                     if(p.isFull()) // checking if the page is full after insertion
@@ -195,7 +201,7 @@ public class Table implements Serializable{
                 }else { // if the page in question is also empty, same process with minor differences
                     p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                             "\\" + e.getPageName() + ".class"); //load the current page
-                    p.setName(e.getPageName());
+                    p.setName(e.getPageName()); // setting the name of the page
                     p.getRecords().insertElementAt(temp, 0); // inserting the maximum of the previous page as the minimum in the next page
                     e.setMinimumRecord(p.getRecords().get(0)); // updating the minimum of the current Page Detail in question
                     temp = p.getRecords().get(p.getRecords().size() - 1); // updating the temp to be the maximum of the current page in question to continue the shifting process
