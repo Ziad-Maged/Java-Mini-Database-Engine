@@ -210,6 +210,7 @@ public class DBApp {
         table = (Table) in.readObject();
         fileIn.close();
         in.close();
+        //TODO Continue the update method.
     }
 
     public void deleteFromTable(String strTableName, Hashtable<String,Object> htblColNameValue) throws DBAppException{
