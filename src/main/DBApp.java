@@ -133,7 +133,7 @@ public class DBApp {
 
     private Object[] getTableDetails(String strTableName,
                                      Hashtable<String, Object> htblColNameValue) throws DBAppException, IOException {
-        Object[] result = new Object[4];
+        Object[] result = new Object[3];
         Hashtable<String, String> htblColNameType = new Hashtable<>();
         Hashtable<String, String> htblColNameMin = new Hashtable<>();
         Hashtable<String, String> htblColNameMax = new Hashtable<>();
@@ -166,20 +166,17 @@ public class DBApp {
                 throw new TypeMissMatchException(e + " is of type " + htblColNameType.get(e));
         }
         result[0] = strClustringKey;
-        result[1] = htblColNameType;
-        result[2] = htblColNameMin;
-        result[3] = htblColNameMax;
+        result[1] = htblColNameMin;
+        result[2] = htblColNameMax;
         return result;
     }
 
     public void insertIntoTable(String strTableName,
                                 Hashtable<String, Object> htblColNameValue) throws DBAppException, IOException, ClassNotFoundException {
         Object[] parameters = getTableDetails(strTableName, htblColNameValue);
-        Hashtable<String, String> htblColNameType = (Hashtable<String, String>) parameters[1];
-        Hashtable<String, String> htblColNameMin = (Hashtable<String, String>) parameters[2];
-        Hashtable<String, String> htblColNameMax = (Hashtable<String, String>) parameters[3];
         String strClustringKey = (String) parameters[0];
-        checkMinMaxInput(htblColNameValue, htblColNameMin, htblColNameMax);
+        checkMinMaxInput(htblColNameValue, (Hashtable<String, String>) parameters[1],
+                (Hashtable<String, String>) parameters[2]);
         Table table;
         FileInputStream fileIn = new FileInputStream(".\\" + strCurrentDatabaseName +
                 "\\" + strTableName + ".class");
@@ -201,8 +198,18 @@ public class DBApp {
 
     public void updateTable(String strTableName,
                             String strClusteringKeyValue,
-                            Hashtable<String,Object> htblColNameValue) throws DBAppException{
-        //TODO LATER
+                            Hashtable<String,Object> htblColNameValue) throws DBAppException, IOException, ClassNotFoundException {
+        Object[] parameters = getTableDetails(strTableName, htblColNameValue);
+        String strClustringKey = (String) parameters[0];
+        checkMinMaxInput(htblColNameValue, (Hashtable<String, String>) parameters[1],
+                (Hashtable<String, String>) parameters[2]);
+        Table table;
+        FileInputStream fileIn = new FileInputStream(".\\" + strCurrentDatabaseName +
+                "\\" + strTableName + ".class");
+        ObjectInputStream in = new ObjectInputStream(fileIn);
+        table = (Table) in.readObject();
+        fileIn.close();
+        in.close();
     }
 
     public void deleteFromTable(String strTableName, Hashtable<String,Object> htblColNameValue) throws DBAppException{
