@@ -1,5 +1,6 @@
 package main;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -134,11 +135,12 @@ public class DBApp {
     private Object[] getTableDetails(String strTableName,
                                      Hashtable<String, Object> htblColNameValue,
                                      String strClustringKeyValue) throws DBAppException, IOException {
-        Object[] result = new Object[3];
+        Object[] result = new Object[4];
         Hashtable<String, String> htblColNameType = new Hashtable<>();
         Hashtable<String, String> htblColNameMin = new Hashtable<>();
         Hashtable<String, String> htblColNameMax = new Hashtable<>();
         String strClustringKey = "";
+        Object objClustringKeyValue = strClustringKeyValue;
         BufferedReader br = new BufferedReader(new FileReader(".\\" + strCurrentDatabaseName +
                 "\\metadata.csv"));
         String s = br.readLine();
@@ -166,9 +168,24 @@ public class DBApp {
                             !(htblColNameValue.get(e) instanceof Date)))
                 throw new TypeMissMatchException(e + " is of type " + htblColNameType.get(e));
         }
+        if(strClustringKeyValue != null){
+            if(htblColNameType.get(strClustringKey).equals("java.lang.Integer"))
+                objClustringKeyValue = Integer.parseInt(strClustringKeyValue);
+            else if(htblColNameType.get(strClustringKey).equals("java.lang.Double"))
+                objClustringKeyValue = Double.parseDouble(strClustringKeyValue);
+            else if(htblColNameType.get(strClustringKey).equals("java.util.Date")){
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                try {
+                    objClustringKeyValue = formatter.parse(strClustringKeyValue);
+                } catch (ParseException e) {
+                    throw new InvalidInputException();
+                }
+            }
+        }
         result[0] = strClustringKey;
         result[1] = htblColNameMin;
         result[2] = htblColNameMax;
+        result[3] = objClustringKeyValue;
         return result;
     }
 
