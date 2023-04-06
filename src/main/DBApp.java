@@ -131,8 +131,9 @@ public class DBApp {
         }
     }
 
-    public void insertIntoTable(String strTableName,
-                                Hashtable<String, Object> htblColNameValue) throws DBAppException, IOException, ClassNotFoundException {
+    private Object[] getTableDetails(String strTableName,
+                                     Hashtable<String, Object> htblColNameValue) throws DBAppException, IOException {
+        Object[] result = new Object[4];
         Hashtable<String, String> htblColNameType = new Hashtable<>();
         Hashtable<String, String> htblColNameMin = new Hashtable<>();
         Hashtable<String, String> htblColNameMax = new Hashtable<>();
@@ -157,13 +158,27 @@ public class DBApp {
             if((htblColNameType.get(e).equals("java.lang.Integer") &&
                     !(htblColNameValue.get(e) instanceof Integer)) ||
                     (htblColNameType.get(e).equals("java.lang.Double") &&
-                    !(htblColNameValue.get(e) instanceof Double)) ||
+                            !(htblColNameValue.get(e) instanceof Double)) ||
                     (htblColNameType.get(e).equals("java.lang.String") &&
                             !(htblColNameValue.get(e) instanceof String)) ||
                     (htblColNameType.get(e).equals("java.util.Date") &&
                             !(htblColNameValue.get(e) instanceof Date)))
                 throw new TypeMissMatchException(e + " is of type " + htblColNameType.get(e));
         }
+        result[0] = strClustringKey;
+        result[1] = htblColNameType;
+        result[2] = htblColNameMin;
+        result[3] = htblColNameMax;
+        return result;
+    }
+
+    public void insertIntoTable(String strTableName,
+                                Hashtable<String, Object> htblColNameValue) throws DBAppException, IOException, ClassNotFoundException {
+        Object[] parameters = getTableDetails(strTableName, htblColNameValue);
+        Hashtable<String, String> htblColNameType = (Hashtable<String, String>) parameters[1];
+        Hashtable<String, String> htblColNameMin = (Hashtable<String, String>) parameters[2];
+        Hashtable<String, String> htblColNameMax = (Hashtable<String, String>) parameters[3];
+        String strClustringKey = (String) parameters[0];
         checkMinMaxInput(htblColNameValue, htblColNameMin, htblColNameMax);
         Table table;
         FileInputStream fileIn = new FileInputStream(".\\" + strCurrentDatabaseName +
