@@ -229,6 +229,7 @@ public class DBApp {
         fileIn.close();
         in.close();
         table.update(parameters[0].toString(), parameters[3], htblColNameValue);
+        table.saveTable(".\\" + strCurrentDatabaseName);
     }
 
     public void deleteFromTable(String strTableName, Hashtable<String,Object> htblColNameValue) throws DBAppException{

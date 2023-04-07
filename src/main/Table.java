@@ -1,4 +1,5 @@
 package main;
+import exceptions.DBAppException;
 import exceptions.InvalidInputException;
 
 import java.io.*;
@@ -227,8 +228,48 @@ public class Table implements Serializable{
     }
 
     public void update(String strClustringKey, Object objClusteringKeyValue,
-                       Hashtable<String,Object> htblColNameValue){
-        //TODO LATER
+                       Hashtable<String,Object> htblColNameValue) throws DBAppException {
+        Page p; // preparing a temporary page
+        for(PageDetails e : details){ // looping over the details of the page to compare the min and max values of the clustering key
+            int compareMin = compareWith(objClusteringKeyValue,
+                    e.getMinimumRecord().get(strClustringKey)); // comparing with the minimum in the current page
+            int compareMax = compareWith(objClusteringKeyValue,
+                    e.getMaximumRecord().get(strClustringKey)); // comparing with the maximum of the current page
+            if(compareMin >= 0 && compareMax <= 0){ // checking if the record in question is in the current page
+                p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
+                        "\\" + e.getPageName() + ".class"); // loading the current page
+                p.setName(e.getPageName()); // setting the current page name to be able to save later
+                if(compareMin == 0){ // checking if the record in question is the minimum record (The first record)
+                    for(String s : p.getRecords().get(0).keySet()){ // looping over all the keys in the record if the condition is true
+                        if(!s.equals(strClustringKey)) // checking that the current key is not the clustering key
+                            p.getRecords().get(0).put(s, htblColNameValue.get(s)); // updating the content of the record
+                    }
+                    e.setMinimumRecord(p.getRecords().get(0)); // updating the minimum record of the details of the page to be able to save
+                    p.savePage(".\\" + DBApp.getStrCurrentDatabaseName()); // saving the current page
+                    return; // exiting out of the method entirely.
+                }else if(compareMax == 0){ // checking if the record in question is the maximum record
+                    for(String s : p.getRecords().get(p.getRecords().size() - 1).keySet()){ // looping over all the keys in the record if the condition is true
+                        if(!s.equals(strClustringKey)) // checking that the current key is not the clustering key
+                            p.getRecords().get(p.getRecords().size() - 1).put(s, htblColNameValue.get(s)); // updating the content of the record
+                    }
+                    e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1)); // updating the maximum record of the details of the page to be able to save
+                    p.savePage(".\\" + DBApp.getStrCurrentDatabaseName()); // saving the page
+                    return; // exiting out of the method entirely
+                }else { // if it is somewhere in the middle of the page
+                    Hashtable<String, Object> temp = new Hashtable<>(); // creating a temp hashtable for the binary search operation
+                    temp.put(strClustringKey, objClusteringKeyValue); // adding the clustering key and its value to the temp
+                    int index = binarySearch(strClustringKey, temp, p.getRecords()); // performing binary search on the page to find the record in question
+                    if(compareWith(p.getRecords().get(index).get(strClustringKey), objClusteringKeyValue) != 0) // checking if the record in question is present in the table
+                        throw new InvalidInputException("Input value for clustering key could not be found"); // halting the program and throwing an exception if the record in question is not present in the table if the condition is true
+                    for(String s : p.getRecords().get(index).keySet()){ // looping over all the keys in the record if the condition is true
+                        if(!s.equals(strClustringKey)) // checking that the current key is not the clustering key
+                            p.getRecords().get(index).put(s, htblColNameValue.get(s)); // updating the content of the record
+                    }
+                    p.savePage(".\\" + DBApp.getStrCurrentDatabaseName()); // saving the page
+                    return; // exiting out of the method entirely
+                }
+            }
+        }
     }
 
     public String toString(){
