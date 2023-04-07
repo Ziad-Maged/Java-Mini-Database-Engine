@@ -192,7 +192,6 @@ public class DBApp {
     public void insertIntoTable(String strTableName,
                                 Hashtable<String, Object> htblColNameValue) throws DBAppException, IOException, ClassNotFoundException {
         Object[] parameters = getTableDetails(strTableName, htblColNameValue, null);
-        String strClustringKey = (String) parameters[0];
         checkMinMaxInput(htblColNameValue, (Hashtable<String, String>) parameters[1],
                 (Hashtable<String, String>) parameters[2]);
         Table table;
@@ -209,7 +208,7 @@ public class DBApp {
             page.getRecords().add(htblColNameValue);
             table.addNewPage(".\\" + strCurrentDatabaseName, page);
         }else{
-            table.insert(strClustringKey, htblColNameValue);
+            table.insert(parameters[0].toString(), htblColNameValue);
         }
         table.saveTable(".\\" + strCurrentDatabaseName);
     }
