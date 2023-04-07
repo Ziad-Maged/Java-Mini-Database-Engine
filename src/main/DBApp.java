@@ -155,7 +155,7 @@ public class DBApp {
             }
             s = br.readLine();
         }
-        if(htblColNameType.size() < 1)
+        if(htblColNameType.isEmpty())
             throw new TableDoesNotExistException(strTableName  + " table does not exist");
         for(String e : htblColNameType.keySet()){
             if((htblColNameType.get(e).equals("java.lang.Integer") &&
