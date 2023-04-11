@@ -1,5 +1,6 @@
 package main;
 
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -182,7 +183,7 @@ public class DBApp {
                         throw new InvalidInputException();
                     }
                 }
-            }catch(ClassCastException | InvalidInputException e){
+            }catch(NumberFormatException | InvalidInputException e){
                 throw new InvalidInputException("Input data does not match the type of the clustering key");
             }
         }
