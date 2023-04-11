@@ -169,17 +169,21 @@ public class DBApp {
                 throw new TypeMissMatchException(e + " is of type " + htblColNameType.get(e));
         }
         if(strClustringKeyValue != null){
-            if(htblColNameType.get(strClustringKey).equals("java.lang.Integer"))
-                objClustringKeyValue = Integer.parseInt(strClustringKeyValue);
-            else if(htblColNameType.get(strClustringKey).equals("java.lang.Double"))
-                objClustringKeyValue = Double.parseDouble(strClustringKeyValue);
-            else if(htblColNameType.get(strClustringKey).equals("java.util.Date")){
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-                try {
-                    objClustringKeyValue = formatter.parse(strClustringKeyValue);
-                } catch (ParseException e) {
-                    throw new InvalidInputException();
+            try{
+                if(htblColNameType.get(strClustringKey).equals("java.lang.Integer"))
+                    objClustringKeyValue = Integer.parseInt(strClustringKeyValue);
+                else if(htblColNameType.get(strClustringKey).equals("java.lang.Double"))
+                    objClustringKeyValue = Double.parseDouble(strClustringKeyValue);
+                else if(htblColNameType.get(strClustringKey).equals("java.util.Date")){
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                    try {
+                        objClustringKeyValue = formatter.parse(strClustringKeyValue);
+                    } catch (ParseException e) {
+                        throw new InvalidInputException();
+                    }
                 }
+            }catch(ClassCastException | InvalidInputException e){
+                throw new InvalidInputException("Input data does not match the type of the clustering key");
             }
         }
         result[0] = strClustringKey;
