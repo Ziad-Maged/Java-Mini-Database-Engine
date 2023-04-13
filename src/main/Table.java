@@ -277,6 +277,7 @@ public class Table implements Serializable{
         for(PageDetails e : details){
             Page p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                     "\\" + e.getPageName() + ".class");
+            p.setId(e.getPageID());
             result.append(p.toString()).append("\n");
         }
         return result.toString();
