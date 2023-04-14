@@ -235,8 +235,19 @@ public class DBApp {
         table.saveTable(".\\" + strCurrentDatabaseName);
     }
 
-    public void deleteFromTable(String strTableName, Hashtable<String,Object> htblColNameValue) throws DBAppException{
-        //TODO LATER
+    public void deleteFromTable(String strTableName, Hashtable<String,Object> htblColNameValue) throws DBAppException, IOException, ClassNotFoundException {
+        Object[] parameters = getTableDetails(strTableName, htblColNameValue, null);
+        checkMinMaxInput(htblColNameValue, (Hashtable<String, String>) parameters[1],
+                (Hashtable<String, String>) parameters[2]);
+        Table table;
+        FileInputStream fileIn = new FileInputStream(".\\" + strCurrentDatabaseName +
+                "\\" + strTableName + ".class");
+        ObjectInputStream in = new ObjectInputStream(fileIn);
+        table = (Table) in.readObject();
+        fileIn.close();
+        in.close();
+        table.delete(parameters[0].toString(), htblColNameValue);
+        table.saveTable(".\\" + strCurrentDatabaseName);
     }
 
     public Iterator selectFromTable(SQLTerm[] arrSQLTerms, String[] strarrOperators) throws DBAppException{
