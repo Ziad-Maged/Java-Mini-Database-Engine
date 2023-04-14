@@ -6,8 +6,8 @@ import java.io.*;
 import java.util.*;
 public class Table implements Serializable{
 
-    private String tableName;
-    private Vector<PageDetails> details;
+    private final String tableName;
+    private final Vector<PageDetails> details;
     private int numberOfRecords;
     private int numberOfPages;
 
@@ -22,10 +22,6 @@ public class Table implements Serializable{
 
     public String getTableName() {
         return tableName;
-    }
-
-    public Vector<PageDetails> getDetails() {
-        return details;
     }
 
     public int getNumberOfRecords(){
@@ -56,13 +52,13 @@ public class Table implements Serializable{
             out.writeObject(this);
             fileOut.close();
             out.close();
-        }catch(Exception e){
+        }catch(Exception ignored){
 
         }
     }
 
     public Page loadPage(String filePath){
-        Vector<Hashtable<String, Object>> result = null;
+        Vector<Hashtable<String, Object>> result;
         try{
             FileInputStream fileIn = new FileInputStream(filePath);
             ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -88,20 +84,20 @@ public class Table implements Serializable{
         return 0;
     }
 
-    private int binarySearch(String strClustringKey, Hashtable<String, Object> record,
+    private int binarySearch(String strClusteringKey, Hashtable<String, Object> record,
                              Vector<Hashtable<String, Object>> page) throws InvalidInputException {
         int start = 0;
         int end = page.size() - 1;
         int middle = (start + end) / 2;
         while(start < end){
-            int comparison = compareWith(record.get(strClustringKey), page.get(middle).get(strClustringKey));
+            int comparison = compareWith(record.get(strClusteringKey), page.get(middle).get(strClusteringKey));
             if(comparison == 1){
                 start = middle + 1;
             }else if(comparison == -1){
                 end = middle;
             }else if(comparison == 0){
                 if(inserting)
-                    throw new InvalidInputException("Clustring Key already exists");
+                    throw new InvalidInputException("Clustering Key already exists");
                 else
                     return middle;
             }
@@ -110,10 +106,10 @@ public class Table implements Serializable{
         return middle;
     }
 
-    public void insert(String strClustringKey, Hashtable<String,Object> htblColNameValue) throws InvalidInputException {
+    public void insert(String strClusteringKey, Hashtable<String,Object> htblColNameValue) throws InvalidInputException {
         inserting = true; // to indicate that the table is currently inserting a value
         boolean shift = false; // boolean variable to indicate whether we need to shift or not
-        Page p = null; // preparing a Page variable
+        Page p; // preparing a Page variable
         /*
          * preparing a temp variable to change the min and max values of a page
          * if needed during the shifting process
@@ -121,10 +117,10 @@ public class Table implements Serializable{
         Hashtable<String, Object> temp = null;
         for(PageDetails e : details){ //looping over the pageDetails vector of the table
             if(!shift){ // checking if no shift is needed
-                int compareMin = compareWith(htblColNameValue.get(strClustringKey),
-                        e.getMinimumRecord().get(strClustringKey)); // comparing the input record with the minimum record of the page
-                int compareMax = compareWith(htblColNameValue.get(strClustringKey),
-                        e.getMaximumRecord().get(strClustringKey)); // comparing the input record with the maximum record of the page
+                int compareMin = compareWith(htblColNameValue.get(strClusteringKey),
+                        e.getMinimumRecord().get(strClusteringKey)); // comparing the input record with the minimum record of the page
+                int compareMax = compareWith(htblColNameValue.get(strClusteringKey),
+                        e.getMaximumRecord().get(strClusteringKey)); // comparing the input record with the maximum record of the page
                 if(compareMin < 0 && compareMax < 0){ // if input record is < the minimum and maximum records of the page
                     p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                             "\\" + e.getPageName() + ".class"); //load the current page
@@ -144,7 +140,7 @@ public class Table implements Serializable{
                     p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                             "\\" + e.getPageName() + ".class"); //load the current page
                     p.setName(e.getPageName()); // setting the name of the page
-                    int indexOfInsertion = binarySearch(strClustringKey, htblColNameValue, p.getRecords()); // get the index of insertion using binary search
+                    int indexOfInsertion = binarySearch(strClusteringKey, htblColNameValue, p.getRecords()); // get the index of insertion using binary search
                     if(e.isFull()){ // checking if the page is already full
                         shift = true; // setting the shift to true to start the shifting process
                         temp = p.getRecords().get(p.getRecords().size() - 1); // setting the temp variable to be the maximum record of the page to shift it to the next page
@@ -172,7 +168,7 @@ public class Table implements Serializable{
                             break; // exiting out of the loop
                         }else
                             indexOfNextPage--; // in case the current page is the last page.
-                        int compareMin2 = compareWith(htblColNameValue.get(strClustringKey), details.get(indexOfNextPage).getMinimumRecord().get(strClustringKey)); // comparing the input with the minimum record of the next page
+                        int compareMin2 = compareWith(htblColNameValue.get(strClusteringKey), details.get(indexOfNextPage).getMinimumRecord().get(strClusteringKey)); // comparing the input with the minimum record of the next page
                         if(compareMin2 > 0){ // checking if the input is greater than the maximum of the current page but less than the minimum of the next page
                             p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                                     "\\" + e.getPageName() + ".class"); //load the current page
@@ -207,7 +203,7 @@ public class Table implements Serializable{
                     e.setMinimumRecord(p.getRecords().get(0)); // updating the minimum of the current Page Detail in question
                     temp = p.getRecords().get(p.getRecords().size() - 1); // updating the temp to be the maximum of the current page in question to continue the shifting process
                     p.getRecords().remove(p.getRecords().size() - 1); // removing the old maximum in the page
-                    e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1)); // updating the detail of the page by setting the maximum to the current maimum in the page
+                    e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1)); // updating the detail of the page by setting the maximum to the current maximum in the page
                     p.savePage(".\\" + DBApp.getStrCurrentDatabaseName()); // saving the page after the insertion process
                 }
             }
@@ -227,21 +223,21 @@ public class Table implements Serializable{
         //TODO LATER
     }
 
-    public void update(String strClustringKey, Object objClusteringKeyValue,
+    public void update(String strClusteringKey, Object objClusteringKeyValue,
                        Hashtable<String,Object> htblColNameValue) throws DBAppException {
         Page p; // preparing a temporary page
         for(PageDetails e : details){ // looping over the details of the page to compare the min and max values of the clustering key
             int compareMin = compareWith(objClusteringKeyValue,
-                    e.getMinimumRecord().get(strClustringKey)); // comparing with the minimum in the current page
+                    e.getMinimumRecord().get(strClusteringKey)); // comparing with the minimum in the current page
             int compareMax = compareWith(objClusteringKeyValue,
-                    e.getMaximumRecord().get(strClustringKey)); // comparing with the maximum of the current page
+                    e.getMaximumRecord().get(strClusteringKey)); // comparing with the maximum of the current page
             if(compareMin >= 0 && compareMax <= 0){ // checking if the record in question is in the current page
                 p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                         "\\" + e.getPageName() + ".class"); // loading the current page
                 p.setName(e.getPageName()); // setting the current page name to be able to save later
                 if(compareMin == 0){ // checking if the record in question is the minimum record (The first record)
                     for(String s : p.getRecords().get(0).keySet()){ // looping over all the keys in the record if the condition is true
-                        if(!s.equals(strClustringKey)) // checking that the current key is not the clustering key
+                        if(!s.equals(strClusteringKey)) // checking that the current key is not the clustering key
                             p.getRecords().get(0).put(s, htblColNameValue.get(s)); // updating the content of the record
                     }
                     e.setMinimumRecord(p.getRecords().get(0)); // updating the minimum record of the details of the page to be able to save
@@ -249,7 +245,7 @@ public class Table implements Serializable{
                     return; // exiting out of the method entirely.
                 }else if(compareMax == 0){ // checking if the record in question is the maximum record
                     for(String s : p.getRecords().get(p.getRecords().size() - 1).keySet()){ // looping over all the keys in the record if the condition is true
-                        if(!s.equals(strClustringKey)) // checking that the current key is not the clustering key
+                        if(!s.equals(strClusteringKey)) // checking that the current key is not the clustering key
                             p.getRecords().get(p.getRecords().size() - 1).put(s, htblColNameValue.get(s)); // updating the content of the record
                     }
                     e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1)); // updating the maximum record of the details of the page to be able to save
@@ -257,12 +253,12 @@ public class Table implements Serializable{
                     return; // exiting out of the method entirely
                 }else { // if it is somewhere in the middle of the page
                     Hashtable<String, Object> temp = new Hashtable<>(); // creating a temp hashtable for the binary search operation
-                    temp.put(strClustringKey, objClusteringKeyValue); // adding the clustering key and its value to the temp
-                    int index = binarySearch(strClustringKey, temp, p.getRecords()); // performing binary search on the page to find the record in question
-                    if(compareWith(p.getRecords().get(index).get(strClustringKey), objClusteringKeyValue) != 0) // checking if the record in question is present in the table
+                    temp.put(strClusteringKey, objClusteringKeyValue); // adding the clustering key and its value to the temp
+                    int index = binarySearch(strClusteringKey, temp, p.getRecords()); // performing binary search on the page to find the record in question
+                    if(compareWith(p.getRecords().get(index).get(strClusteringKey), objClusteringKeyValue) != 0) // checking if the record in question is present in the table
                         throw new InvalidInputException("Input value for clustering key could not be found"); // halting the program and throwing an exception if the record in question is not present in the table if the condition is true
                     for(String s : p.getRecords().get(index).keySet()){ // looping over all the keys in the record if the condition is true
-                        if(!s.equals(strClustringKey)) // checking that the current key is not the clustering key
+                        if(!s.equals(strClusteringKey)) // checking that the current key is not the clustering key
                             p.getRecords().get(index).put(s, htblColNameValue.get(s)); // updating the content of the record
                     }
                     p.savePage(".\\" + DBApp.getStrCurrentDatabaseName()); // saving the page
@@ -278,7 +274,7 @@ public class Table implements Serializable{
             Page p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                     "\\" + e.getPageName() + ".class");
             p.setId(e.getPageID());
-            result.append(p.toString()).append("\n");
+            result.append(p).append("\n");
         }
         return result.toString();
     }
