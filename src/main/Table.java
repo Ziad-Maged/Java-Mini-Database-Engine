@@ -125,7 +125,7 @@ public class Table implements Serializable{
                         e.getMinimumRecord().get(strClustringKey)); // comparing the input record with the minimum record of the page
                 int compareMax = compareWith(htblColNameValue.get(strClustringKey),
                         e.getMaximumRecord().get(strClustringKey)); // comparing the input record with the maximum record of the page
-                if(compareMin == -1 && compareMax == -1){ // if input record is < the minimum and maximum records of the page
+                if(compareMin < 0 && compareMax < 0){ // if input record is < the minimum and maximum records of the page
                     p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                             "\\" + e.getPageName() + ".class"); //load the current page
                     p.setName(e.getPageName()); //set the current page name for later serialization
@@ -140,7 +140,7 @@ public class Table implements Serializable{
                     if(p.isFull()) // checking if the page was not full before insertion and became full after insertion
                         e.setFull(true); // if true then we indicate that the page is now full and any further insertions in that page require shifting
                     p.savePage(".\\" + DBApp.getStrCurrentDatabaseName()); // saving the page after the insertion process
-                }else if(compareMin == 1 && compareMax == -1){ // checking idf the input belongs to the current page
+                }else if(compareMin > 0 && compareMax < 0){ // checking if the input belongs to the current page
                     p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                             "\\" + e.getPageName() + ".class"); //load the current page
                     p.setName(e.getPageName()); // setting the name of the page
@@ -155,7 +155,7 @@ public class Table implements Serializable{
                     if(p.isFull()) // checking if the page was not full before insertion and became full after insertion
                         e.setFull(true); // if true then we indicate that the page is now full and any further insertions in that page require shifting
                     p.savePage(".\\" + DBApp.getStrCurrentDatabaseName()); // saving the page after the insertion process
-                }else if(compareMin == 1 && compareMax == 1){ // checking if the input is greater than the maximum
+                }else if(compareMin > 0 && compareMax > 0){ // checking if the input is greater than the maximum
                     if(e.isFull()) // if the page is already full, we skip this iteration and restart the loop
                         continue; // skipping the iteration
                     else { // if the page is not full
@@ -173,7 +173,7 @@ public class Table implements Serializable{
                         }else
                             indexOfNextPage--; // in case the current page is the last page.
                         int compareMin2 = compareWith(htblColNameValue.get(strClustringKey), details.get(indexOfNextPage).getMinimumRecord().get(strClustringKey)); // comparing the input with the minimum record of the next page
-                        if(compareMin2 == 1){ // checking if the input is greater than the maximum of the current page but less than the minimum of the next page
+                        if(compareMin2 > 0){ // checking if the input is greater than the maximum of the current page but less than the minimum of the next page
                             p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                                     "\\" + e.getPageName() + ".class"); //load the current page
                             p.setName(e.getPageName()); // setting the name of the page
