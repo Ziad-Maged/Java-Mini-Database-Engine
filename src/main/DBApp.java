@@ -1,6 +1,5 @@
 package main;
 
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -14,7 +13,7 @@ public class DBApp {
 
     private static String strCurrentDatabaseName;
 
-    public void init() throws IOException {
+    public void init() {
         createDatabase("Database");
         selectDatabase("Database");
     }
@@ -37,8 +36,7 @@ public class DBApp {
                     "IndexType", "min", "max"};
             writer.writeNext(header);
             writer.close();
-        }catch(Exception e) {
-            System.out.println(e);
+        }catch(Exception ignored) {
         }
     }
 
@@ -62,7 +60,7 @@ public class DBApp {
 
             BufferedReader br = new BufferedReader(new FileReader(".\\" + strCurrentDatabaseName +
                     "\\metadata.csv"));
-            List<String[]> currentMetaDataStringList = new ArrayList<String[]>();
+            List<String[]> currentMetaDataStringList = new ArrayList<>();
             String s = br.readLine();
             while(s != null) {
                 currentMetaDataStringList.add(s.split(","));
@@ -135,13 +133,13 @@ public class DBApp {
 
     private Object[] getTableDetails(String strTableName,
                                      Hashtable<String, Object> htblColNameValue,
-                                     String strClustringKeyValue) throws DBAppException, IOException {
+                                     String strClusteringKeyValue) throws DBAppException, IOException {
         Object[] result = new Object[4];
         Hashtable<String, String> htblColNameType = new Hashtable<>();
         Hashtable<String, String> htblColNameMin = new Hashtable<>();
         Hashtable<String, String> htblColNameMax = new Hashtable<>();
-        String strClustringKey = "";
-        Object objClustringKeyValue = strClustringKeyValue;
+        String strClusteringKey = "";
+        Object objClusteringKeyValue = strClusteringKeyValue;
         BufferedReader br = new BufferedReader(new FileReader(".\\" + strCurrentDatabaseName +
                 "\\metadata.csv"));
         String s = br.readLine();
@@ -152,7 +150,7 @@ public class DBApp {
                 htblColNameMin.put(header[1], header[6]);
                 htblColNameMax.put(header[1], header[7]);
                 if(header[3].equals("True"))
-                    strClustringKey = header[1];
+                    strClusteringKey = header[1];
             }
             s = br.readLine();
         }
@@ -169,16 +167,16 @@ public class DBApp {
                             !(htblColNameValue.get(e) instanceof Date)))
                 throw new TypeMissMatchException(e + " is of type " + htblColNameType.get(e));
         }
-        if(strClustringKeyValue != null){
+        if(strClusteringKeyValue != null){
             try{
-                if(htblColNameType.get(strClustringKey).equals("java.lang.Integer"))
-                    objClustringKeyValue = Integer.parseInt(strClustringKeyValue);
-                else if(htblColNameType.get(strClustringKey).equals("java.lang.Double"))
-                    objClustringKeyValue = Double.parseDouble(strClustringKeyValue);
-                else if(htblColNameType.get(strClustringKey).equals("java.util.Date")){
+                if(htblColNameType.get(strClusteringKey).equals("java.lang.Integer"))
+                    objClusteringKeyValue = Integer.parseInt(strClusteringKeyValue);
+                else if(htblColNameType.get(strClusteringKey).equals("java.lang.Double"))
+                    objClusteringKeyValue = Double.parseDouble(strClusteringKeyValue);
+                else if(htblColNameType.get(strClusteringKey).equals("java.util.Date")){
                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
                     try {
-                        objClustringKeyValue = formatter.parse(strClustringKeyValue);
+                        objClusteringKeyValue = formatter.parse(strClusteringKeyValue);
                     } catch (ParseException e) {
                         throw new InvalidInputException();
                     }
@@ -187,10 +185,10 @@ public class DBApp {
                 throw new InvalidInputException("Input data does not match the type of the clustering key");
             }
         }
-        result[0] = strClustringKey;
+        result[0] = strClusteringKey;
         result[1] = htblColNameMin;
         result[2] = htblColNameMax;
-        result[3] = objClustringKeyValue;
+        result[3] = objClusteringKeyValue;
         return result;
     }
 
@@ -222,7 +220,7 @@ public class DBApp {
                             String strClusteringKeyValue,
                             Hashtable<String,Object> htblColNameValue) throws DBAppException, IOException, ClassNotFoundException {
         if(strClusteringKeyValue == null || strClusteringKeyValue.equals(""))
-            throw new InvalidInputException("Clustring Key value should not be empty");
+            throw new InvalidInputException("Clustering Key value should not be empty");
         Object[] parameters = getTableDetails(strTableName, htblColNameValue, strClusteringKeyValue);
         checkMinMaxInput(htblColNameValue, (Hashtable<String, String>) parameters[1],
                 (Hashtable<String, String>) parameters[2]);
