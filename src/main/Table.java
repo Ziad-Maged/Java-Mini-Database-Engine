@@ -222,7 +222,7 @@ public class Table implements Serializable{
     public void delete(String strClusteringKeyValue, Hashtable<String,Object> htblColNameValue) {
         boolean exits = false;
         Page p=null;
-        Object objClusteringKeyValue  = htblColNameValue.get(strClusteringKeyValue);// getting the objclustringkey
+        Object objClusteringKeyValue  = htblColNameValue.get(strClusteringKeyValue);// getting the objClusteringKey
         //Hashtable<String, Object> temp = null;
         for(PageDetails e : details) { // looping over the details of the page to compare the min and max values of the clustering key
             int compareMin = compareWith(objClusteringKeyValue,
