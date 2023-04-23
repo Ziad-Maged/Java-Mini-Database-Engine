@@ -193,46 +193,54 @@ public class DBApp {
     }
 
     public void insertIntoTable(String strTableName,
-                                Hashtable<String, Object> htblColNameValue) throws DBAppException, IOException, ClassNotFoundException {
-        Object[] parameters = getTableDetails(strTableName, htblColNameValue, null);
-        checkMinMaxInput(htblColNameValue, (Hashtable<String, String>) parameters[1],
-                (Hashtable<String, String>) parameters[2]);
-        Table table;
-        FileInputStream fileIn = new FileInputStream(".\\" + strCurrentDatabaseName +
-                "\\" + strTableName + ".class");
-        ObjectInputStream in = new ObjectInputStream(fileIn);
-        table = (Table) in.readObject();
-        fileIn.close();
-        in.close();
-        if(table.getNumberOfRecords() == 0 && table.getNumberOfPages() == 0){
-            table.setNumberOfPages(1);
-            table.setNumberOfRecords(1);
-            Page page = new Page(table.getTableName(), table.getNumberOfPages());
-            page.getRecords().add(htblColNameValue);
-            table.addNewPage(".\\" + strCurrentDatabaseName, page);
-        }else{
-            table.insert(parameters[0].toString(), htblColNameValue);
+                                Hashtable<String, Object> htblColNameValue) throws DBAppException{
+        try{
+            Object[] parameters = getTableDetails(strTableName, htblColNameValue, null);
+            checkMinMaxInput(htblColNameValue, (Hashtable<String, String>) parameters[1],
+                    (Hashtable<String, String>) parameters[2]);
+            Table table;
+            FileInputStream fileIn = new FileInputStream(".\\" + strCurrentDatabaseName +
+                    "\\" + strTableName + ".class");
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            table = (Table) in.readObject();
+            fileIn.close();
+            in.close();
+            if(table.getNumberOfRecords() == 0 && table.getNumberOfPages() == 0){
+                table.setNumberOfPages(1);
+                table.setNumberOfRecords(1);
+                Page page = new Page(table.getTableName(), table.getNumberOfPages());
+                page.getRecords().add(htblColNameValue);
+                table.addNewPage(".\\" + strCurrentDatabaseName, page);
+            }else{
+                table.insert(parameters[0].toString(), htblColNameValue);
+            }
+            table.saveTable(".\\" + strCurrentDatabaseName);
+        }catch(IOException | ClassNotFoundException e){
+            System.out.println(e.getMessage());
         }
-        table.saveTable(".\\" + strCurrentDatabaseName);
     }
 
     public void updateTable(String strTableName,
                             String strClusteringKeyValue,
-                            Hashtable<String,Object> htblColNameValue) throws DBAppException, IOException, ClassNotFoundException {
-        if(strClusteringKeyValue == null || strClusteringKeyValue.equals(""))
-            throw new InvalidInputException("Clustering Key value should not be empty");
-        Object[] parameters = getTableDetails(strTableName, htblColNameValue, strClusteringKeyValue);
-        checkMinMaxInput(htblColNameValue, (Hashtable<String, String>) parameters[1],
-                (Hashtable<String, String>) parameters[2]);
-        Table table;
-        FileInputStream fileIn = new FileInputStream(".\\" + strCurrentDatabaseName +
-                "\\" + strTableName + ".class");
-        ObjectInputStream in = new ObjectInputStream(fileIn);
-        table = (Table) in.readObject();
-        fileIn.close();
-        in.close();
-        table.update(parameters[0].toString(), parameters[3], htblColNameValue);
-        table.saveTable(".\\" + strCurrentDatabaseName);
+                            Hashtable<String,Object> htblColNameValue) throws DBAppException{
+        try{
+            if(strClusteringKeyValue == null || strClusteringKeyValue.equals(""))
+                throw new InvalidInputException("Clustering Key value should not be empty");
+            Object[] parameters = getTableDetails(strTableName, htblColNameValue, strClusteringKeyValue);
+            checkMinMaxInput(htblColNameValue, (Hashtable<String, String>) parameters[1],
+                    (Hashtable<String, String>) parameters[2]);
+            Table table;
+            FileInputStream fileIn = new FileInputStream(".\\" + strCurrentDatabaseName +
+                    "\\" + strTableName + ".class");
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            table = (Table) in.readObject();
+            fileIn.close();
+            in.close();
+            table.update(parameters[0].toString(), parameters[3], htblColNameValue);
+            table.saveTable(".\\" + strCurrentDatabaseName);
+        }catch(IOException | ClassNotFoundException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     public void deleteFromTable(String strTableName, Hashtable<String,Object> htblColNameValue) throws DBAppException, IOException, ClassNotFoundException {
