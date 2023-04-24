@@ -71,7 +71,7 @@ public class Table implements Serializable{
         details.clear(); // clearing the details vector
     }
 
-    public Page loadPage(String filePath){
+    private Page loadPage(String filePath){
         Vector<Hashtable<String, Object>> result;
         try{
             FileInputStream fileIn = new FileInputStream(filePath);
