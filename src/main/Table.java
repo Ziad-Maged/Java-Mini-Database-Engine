@@ -57,6 +57,20 @@ public class Table implements Serializable{
         }
     }
 
+    /**
+     * This method is made to clear the whole table in case the input to the delete method has an
+     * <b><i>empty hashtable</i></b>.*/
+    public void truncateTable(){
+        for(PageDetails e : details){ // looping over all pages if the hashtable is empty
+            File page = new File(".\\" + DBApp.getStrCurrentDatabaseName() +
+                    "\\" + e.getPageName() + ".class"); // creating a file variable for every page in the table
+            page.delete(); // deleting every page in the table
+        }
+        numberOfRecords = 0; // resetting the number of records in the table
+        numberOfPages = 0; // resetting the number of pages in the table
+        details.clear(); // clearing the details vector
+    }
+
     public Page loadPage(String filePath){
         Vector<Hashtable<String, Object>> result;
         try{
@@ -221,16 +235,7 @@ public class Table implements Serializable{
 
     public void delete(String strClusteringKey, Hashtable<String,Object> htblColNameValue) {
         Page p; // creating a page variable
-        if(htblColNameValue.isEmpty()){ // checking if the input hashtable is empty
-            for(PageDetails e : details){ // looping over all pages if the hashtable is empty
-                File page = new File(".\\" + DBApp.getStrCurrentDatabaseName() +
-                        "\\" + e.getPageName() + ".class"); // creating a file variable for every page in the table
-                page.delete(); // deleting every page in the table
-            }
-            numberOfRecords = 0; // resetting the number of records in the table
-            numberOfPages = 0; // resetting the number of pages in the table
-            details.clear(); // clearing the details vector
-        }else if(strClusteringKey != null){
+        if(strClusteringKey != null){
             //TODO Later
         }else {
             //TODO Later
