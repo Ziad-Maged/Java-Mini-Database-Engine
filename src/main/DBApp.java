@@ -255,7 +255,17 @@ public class DBApp {
             table = (Table) in.readObject();
             fileIn.close();
             in.close();
-            table.delete(parameters[0].toString(), htblColNameValue);
+            boolean exists = false;
+            for(String e : htblColNameValue.keySet()){
+                if(e.equals(parameters[0].toString())){
+                    exists = true;
+                    break;
+                }
+            }
+            if(exists)
+                table.delete(parameters[0].toString(), htblColNameValue);
+            else
+                table.delete(null, htblColNameValue);
             table.saveTable(".\\" + strCurrentDatabaseName);
         }catch (IOException | ClassNotFoundException e){
             System.out.println(e.getMessage());
