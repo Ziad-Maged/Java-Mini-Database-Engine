@@ -220,16 +220,16 @@ public class Table implements Serializable{
     }
 
     public void delete(String strClusteringKey, Hashtable<String,Object> htblColNameValue) {
-        Page p;
-        if(htblColNameValue.isEmpty()){
-            for(PageDetails e : details){
+        Page p; // creating a page variable
+        if(htblColNameValue.isEmpty()){ // checking if the input hashtable is empty
+            for(PageDetails e : details){ // looping over all pages if the hashtable is empty
                 File page = new File(".\\" + DBApp.getStrCurrentDatabaseName() +
-                        "\\" + e.getPageName() + ".class");
-                page.delete();
+                        "\\" + e.getPageName() + ".class"); // creating a file variable for every page in the table
+                page.delete(); // deleting every page in the table
             }
-            numberOfRecords = 0;
-            numberOfPages = 0;
-            details.clear();
+            numberOfRecords = 0; // resetting the number of records in the table
+            numberOfPages = 0; // resetting the number of pages in the table
+            details.clear(); // clearing the details vector
         }else if(strClusteringKey != null){
             //TODO Later
         }else {
