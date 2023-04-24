@@ -220,7 +220,17 @@ public class Table implements Serializable{
     }
 
     public void delete(String strClusteringKey, Hashtable<String,Object> htblColNameValue) {
-        if(strClusteringKey != null){
+        Page p;
+        if(htblColNameValue.isEmpty()){
+            for(PageDetails e : details){
+                File page = new File(".\\" + DBApp.getStrCurrentDatabaseName() +
+                        "\\" + e.getPageName() + ".class");
+                page.delete();
+            }
+            numberOfRecords = 0;
+            numberOfPages = 0;
+            details.clear();
+        }else if(strClusteringKey != null){
             //TODO Later
         }else {
             //TODO Later
