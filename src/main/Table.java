@@ -138,6 +138,7 @@ public class Table implements Serializable{
                 if(compareMin < 0 && compareMax < 0){ // if input record is < the minimum and maximum records of the page
                     p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                             "\\" + e.getPageName() + ".class"); //load the current page
+                    assert p != null;
                     p.setName(e.getPageName()); //set the current page name for later serialization
                     if(e.isFull()){ // checking if the page is already full
                         shift = true; // setting the shift to true to start the shifting process
@@ -153,6 +154,7 @@ public class Table implements Serializable{
                 }else if(compareMin > 0 && compareMax < 0){ // checking if the input belongs to the current page
                     p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                             "\\" + e.getPageName() + ".class"); //load the current page
+                    assert p != null;
                     p.setName(e.getPageName()); // setting the name of the page
                     int indexOfInsertion = binarySearch(strClusteringKey, htblColNameValue, p.getRecords()); // get the index of insertion using binary search
                     if(e.isFull()){ // checking if the page is already full
@@ -166,13 +168,12 @@ public class Table implements Serializable{
                         e.setFull(true); // if true then we indicate that the page is now full and any further insertions in that page require shifting
                     p.savePage(".\\" + DBApp.getStrCurrentDatabaseName()); // saving the page after the insertion process
                 }else if(compareMin > 0 && compareMax > 0){ // checking if the input is greater than the maximum
-                    if(e.isFull()) // if the page is already full, we skip this iteration and restart the loop
-                        continue; // skipping the iteration
-                    else { // if the page is not full
+                    if(!e.isFull()) { // if the page is not full
                         int indexOfNextPage = details.indexOf(e) + 1; // finding the index of the next page
                         if(!(indexOfNextPage >= details.size())){ // checking if the index of the next page is greater than the number of pages in the table, then the current page is the last page
                             p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                                     "\\" + e.getPageName() + ".class"); //load the current page
+                            assert p != null;
                             p.setName(e.getPageName()); // setting the name of the page
                             p.getRecords().add(htblColNameValue); // inserting the input in the page
                             e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1)); // updating the maximum since the input is greater than the maximum
@@ -186,6 +187,7 @@ public class Table implements Serializable{
                         if(compareMin2 > 0){ // checking if the input is greater than the maximum of the current page but less than the minimum of the next page
                             p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                                     "\\" + e.getPageName() + ".class"); //load the current page
+                            assert p != null;
                             p.setName(e.getPageName()); // setting the name of the page
                             p.getRecords().add(htblColNameValue); // inserting the input in the page
                             e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1)); // updating the maximum since the input is greater than the maximum
@@ -193,14 +195,14 @@ public class Table implements Serializable{
                                 e.setFull(true); // updating the status of the page after the insertion process makes the page full
                             p.savePage(".\\" + DBApp.getStrCurrentDatabaseName()); // saving the page after the insertion process
                             break; // exiting out of the loop
-                        }else // if it is not the case that the input is less than the minimum of the next page
-                            continue; // we skip the iteration because the input is greater than the minimum of the next page
+                        }// if it is not the case that the input is less than the minimum of the next page. We skip the iteration because the input is greater than the minimum of the next page
                     }
                 }
             }else { // if shifting must be done.
                 if(!e.isFull()){ // if the page in question is not full then the shifting stops here
                     p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                             "\\" + e.getPageName() + ".class"); //load the current page
+                    assert p != null;
                     p.setName(e.getPageName()); // setting the name of the page
                     p.getRecords().insertElementAt(temp, 0); // inserting the maximum of the previous page as the minimum in the next page
                     e.setMinimumRecord(p.getRecords().get(0)); // updating the minimum of the current Page Detail in question
@@ -212,6 +214,7 @@ public class Table implements Serializable{
                 }else { // if the page in question is also empty, same process with minor differences
                     p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                             "\\" + e.getPageName() + ".class"); //load the current page
+                    assert p != null;
                     p.setName(e.getPageName()); // setting the name of the page
                     p.getRecords().insertElementAt(temp, 0); // inserting the maximum of the previous page as the minimum in the next page
                     e.setMinimumRecord(p.getRecords().get(0)); // updating the minimum of the current Page Detail in question
@@ -253,6 +256,7 @@ public class Table implements Serializable{
             if(compareMin >= 0 && compareMax <= 0){ // checking if the record in question is in the current page
                 p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                         "\\" + e.getPageName() + ".class"); // loading the current page
+                assert p != null;
                 p.setName(e.getPageName()); // setting the current page name to be able to save later
                 if(compareMin == 0){ // checking if the record in question is the minimum record (The first record)
                     for(String s : p.getRecords().get(0).keySet()){ // looping over all the keys in the record if the condition is true
@@ -292,6 +296,7 @@ public class Table implements Serializable{
         for(PageDetails e : details){
             Page p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                     "\\" + e.getPageName() + ".class");
+            assert p != null;
             p.setId(e.getPageID());
             result.append(p).append("\n");
         }
