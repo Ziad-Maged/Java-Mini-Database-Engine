@@ -219,47 +219,12 @@ public class Table implements Serializable{
                 "\\" + tableName + ".class"); // saving the details of the table after insertion
     }
 
-    public void delete(String strClusteringKeyValue, Hashtable<String,Object> htblColNameValue) {
-        boolean exits = false;
-        Page p=null;
-        Object objClusteringKeyValue  = htblColNameValue.get(strClusteringKeyValue);// getting the objClusteringKey
-        //Hashtable<String, Object> temp = null;
-        for(PageDetails e : details) { // looping over the details of the page to compare the min and max values of the clustering key
-            int compareMin = compareWith(objClusteringKeyValue,
-                    e.getMinimumRecord().get(strClusteringKeyValue));
-            int comparemax =  compareWith( objClusteringKeyValue,e.getMaximumRecord().get(strClusteringKeyValue));
-            if (compareMin<0 && comparemax<0){ //
-                p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
-                        "\\" + e.getPageName() + ".class"); // loading the current page
-                p.setName(e.getPageName()); // setting the current page name to be able to save later
-                //Trash:temp = p.getRecords().get(0); // setting the temp variable to be the record first of the page
-                p.getRecords().remove(p.getRecords().get(0));//removing first value
-                e.setMinimumRecord(p.getRecords().get(1));
-                p.savePage(".\\" + DBApp.getStrCurrentDatabaseName());
-
-            }
-            else if(compareMin>0 && comparemax<0){//at the end
-                p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
-                        "\\" + e.getPageName() + ".class"); // loading the current page
-                p.setName(e.getPageName()); // setting the current page name to be able to save later
-                //Trash:temp = p.getRecords().get(p.getRecords().size() - 1)); // setting the temp variable to be the maximum record of the page
-                p.getRecords().remove(p.getRecords().get(p.getRecords().size() - 1));
-                e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1));//resetting the maximum value
-                p.savePage(".\\" + DBApp.getStrCurrentDatabaseName());
-
-            } else if (compareMin>0 && comparemax>0) {//in the middle
-                p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
-                        "\\" + e.getPageName() + ".class"); // loading the current page
-                p.setName(e.getPageName()); // setting the current page name to be able to save later
-                p.getRecords().remove(htblColNameValue);//to be modified
-                p.savePage(".\\" + DBApp.getStrCurrentDatabaseName());
-
-            }
+    public void delete(String strClusteringKey, Hashtable<String,Object> htblColNameValue) {
+        if(strClusteringKey != null){
+            //TODO Later
+        }else {
+            //TODO Later
         }
-
-
-
-
     }
 
     public void update(String strClusteringKey, Object objClusteringKeyValue,
