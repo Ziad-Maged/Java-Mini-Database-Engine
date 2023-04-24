@@ -238,8 +238,20 @@ public class Table implements Serializable{
 
     public void delete(String strClusteringKey, Hashtable<String,Object> htblColNameValue) {
         Page p; // creating a page variable
-        if(strClusteringKey != null){
-            //TODO Later
+        if(strClusteringKey != null){ // having the clustering key means that we will delete only one record. So binary search.
+            for(PageDetails e : details){
+                int compareMin = compareWith(htblColNameValue.get(strClusteringKey),
+                        e.getMinimumRecord().get(strClusteringKey)); // comparing the input with the minimum record in the page
+                int compareMax = compareWith(htblColNameValue.get(strClusteringKey),
+                        e.getMaximumRecord().get(strClusteringKey)); // comparing the input with the maximum record in the page
+                if(compareMin == 0){ // checking if the input record is equal to the minimum
+                    //TODO
+                }else if(compareMax == 0){ // checking if the input record is equal to the maximum
+                    //TODO
+                }else if(compareMin > 0 && compareMax < 0){ // checking if the input record is within the page
+                    //TODO
+                }
+            }
         }else {
             //TODO Later
         }
