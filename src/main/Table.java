@@ -236,7 +236,14 @@ public class Table implements Serializable{
                 "\\" + tableName + ".class"); // saving the details of the table after insertion
     }
 
-    public void delete(String strClusteringKey, Hashtable<String,Object> htblColNameValue) {
+    private boolean toBeDeleted(Hashtable<String, Object> record, Hashtable<String, Object> values){
+        for(String e : values.keySet())
+            if(!record.get(e).equals(values.get(e)))
+                return false;
+        return true;
+    }
+
+    public void delete(String strClusteringKey, Hashtable<String,Object> htblColNameValue) throws InvalidInputException {
         Page p = null; // creating a page variable
         if(strClusteringKey != null){ // having the clustering key means that we will delete only one record. So binary search.
             for(PageDetails e : details){ // looping over all the page details
@@ -283,6 +290,16 @@ public class Table implements Serializable{
                             "\\" + e.getPageName() + ".class"); //load the current page
                     assert p != null; // IntelliJ's precautionary measures against NullPointerException
                     p.setName(e.getPageName()); // setting the name of the page
+                    int indexOfDeletion = binarySearch(strClusteringKey, htblColNameValue, p.getRecords()); // finding the index of deletion using binary search
+                    if(!htblColNameValue.get(strClusteringKey).equals(p.getRecords().get(indexOfDeletion).get(strClusteringKey))) // checking if the acquired record does indeed exist with the same value for the clustering key
+                        throw new InvalidInputException("The input value for the clustering key does not exist"); // if not then we throw an exception and halt the whole program
+                    p.getRecords().remove(indexOfDeletion); // otherwise we simply remove the record
+                    numberOfRecords--; // we decrement the number of records in the table
+                    e.setFull(false); // if the page was already full before deletion then it is not full after deletion
+                    /*The reason why we did not check if the page is empty or not is because of the above two conditions.
+                    * If the page does have a maximum and a minimum and the record in question is neither,
+                    * then the page has more than two records, and since we are deleting only one record,
+                    * we do not need to check if the page will be empty or not as it will never be empty in this condition*/
                 }
             }
         }else {
