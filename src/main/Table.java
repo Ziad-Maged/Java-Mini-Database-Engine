@@ -71,6 +71,7 @@ public class Table implements Serializable{
         details.clear(); // clearing the details vector
     }
 
+    @SuppressWarnings("unchecked")
     private Page loadPage(String filePath){
         Vector<Hashtable<String, Object>> result;
         try{
