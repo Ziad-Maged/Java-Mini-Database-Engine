@@ -279,7 +279,10 @@ public class Table implements Serializable{
                         e.setFull(false); // if the page was already full before deletion then it is not full after deletion
                     }
                 }else if(compareMin > 0 && compareMax < 0){ // checking if the input record is within the page
-                    //TODO
+                    p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
+                            "\\" + e.getPageName() + ".class"); //load the current page
+                    assert p != null; // IntelliJ's precautionary measures against NullPointerException
+                    p.setName(e.getPageName()); // setting the name of the page
                 }
             }
         }else {
