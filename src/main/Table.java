@@ -244,7 +244,7 @@ public class Table implements Serializable{
     }
 
     public void delete(String strClusteringKey, Hashtable<String,Object> htblColNameValue) throws InvalidInputException {
-        Page p = null; // creating a page variable
+        Page p; // creating a page variable
         if(strClusteringKey != null){ // having the clustering key means that we will delete only one record. So binary search.
             for(PageDetails e : details){ // looping over all the page details
                 int compareMin = compareWith(htblColNameValue.get(strClusteringKey),
