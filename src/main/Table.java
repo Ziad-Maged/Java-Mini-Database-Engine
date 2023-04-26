@@ -303,8 +303,29 @@ public class Table implements Serializable{
                     */
                 }
             }
-        }else {
-            //TODO Later
+        }else { // if we do not have the clustering key, we have to search Linearly XD
+            Vector<PageDetails> pagesToDelete = new Vector<>(); // since we cannot access the internal counter of the for each loop, we create this vector to store the pages that will be deleted later once they get empty
+            for(PageDetails e : details){ // looping over all the page details
+                p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
+                        "\\" + e.getPageName() + ".class"); //load the current page
+                assert p != null; // IntelliJ's precautionary measures against NullPointerException
+                p.setName(e.getPageName()); // setting the name of the page
+                for(int i = 0; i < p.getRecords().size(); i++){ // looping over all the records in the page
+                    if(toBeDeleted(p.getRecords().get(i), htblColNameValue)){ // checking if the current record is one of the records in question
+                        p.getRecords().remove(i--); // removing the records and decrementing the counter by one to accommodate the condition that two records that should be deleted are consecutive
+                        numberOfRecords--; // decrementing the number of records in the table each time a record is deleted happens
+                        e.setFull(false); // making sure that the page is empty after every delete.
+                    }
+                }
+                if(p.isEmpty()) // checking to see if the page becomes empty after serial deletion
+                    pagesToDelete.add(e); // adding the page to the vector in case the page is found to be empty
+            }
+            for(PageDetails e : pagesToDelete){ // looping over the vector to delete the pages that need to be deleted
+                File page = new File(".\\" + DBApp.getStrCurrentDatabaseName() +
+                        "\\" + e.getPageName() + ".class"); // creating a file variable that targets the page in question
+                page.delete(); // deleting the page
+                details.remove(e); // removing the page from the details vector of the table
+            }
         }
     }
 
