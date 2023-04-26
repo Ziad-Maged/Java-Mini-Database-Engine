@@ -299,7 +299,8 @@ public class Table implements Serializable{
                     /*The reason why we did not check if the page is empty or not is because of the above two conditions.
                     * If the page does have a maximum and a minimum and the record in question is neither,
                     * then the page has more than two records, and since we are deleting only one record,
-                    * we do not need to check if the page will be empty or not as it will never be empty in this condition*/
+                    * we do not need to check if the page will be empty or not as it will never be empty in this condition
+                    */
                 }
             }
         }else {
