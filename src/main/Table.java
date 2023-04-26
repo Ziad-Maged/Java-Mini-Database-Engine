@@ -138,7 +138,7 @@ public class Table implements Serializable{
                 if(compareMin < 0 && compareMax < 0){ // if input record is < the minimum and maximum records of the page
                     p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                             "\\" + e.getPageName() + ".class"); //load the current page
-                    assert p != null;
+                    assert p != null; // IntelliJ's precautionary measures against NullPointerException
                     p.setName(e.getPageName()); //set the current page name for later serialization
                     if(e.isFull()){ // checking if the page is already full
                         shift = true; // setting the shift to true to start the shifting process
@@ -154,7 +154,7 @@ public class Table implements Serializable{
                 }else if(compareMin > 0 && compareMax < 0){ // checking if the input belongs to the current page
                     p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                             "\\" + e.getPageName() + ".class"); //load the current page
-                    assert p != null;
+                    assert p != null; // IntelliJ's precautionary measures against NullPointerException
                     p.setName(e.getPageName()); // setting the name of the page
                     int indexOfInsertion = binarySearch(strClusteringKey, htblColNameValue, p.getRecords()); // get the index of insertion using binary search
                     if(e.isFull()){ // checking if the page is already full
@@ -173,7 +173,7 @@ public class Table implements Serializable{
                         if(!(indexOfNextPage >= details.size())){ // checking if the index of the next page is greater than the number of pages in the table, then the current page is the last page
                             p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                                     "\\" + e.getPageName() + ".class"); //load the current page
-                            assert p != null;
+                            assert p != null; // IntelliJ's precautionary measures against NullPointerException
                             p.setName(e.getPageName()); // setting the name of the page
                             p.getRecords().add(htblColNameValue); // inserting the input in the page
                             e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1)); // updating the maximum since the input is greater than the maximum
@@ -187,7 +187,7 @@ public class Table implements Serializable{
                         if(compareMin2 > 0){ // checking if the input is greater than the maximum of the current page but less than the minimum of the next page
                             p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                                     "\\" + e.getPageName() + ".class"); //load the current page
-                            assert p != null;
+                            assert p != null; // IntelliJ's precautionary measures against NullPointerException
                             p.setName(e.getPageName()); // setting the name of the page
                             p.getRecords().add(htblColNameValue); // inserting the input in the page
                             e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1)); // updating the maximum since the input is greater than the maximum
@@ -202,7 +202,7 @@ public class Table implements Serializable{
                 if(!e.isFull()){ // if the page in question is not full then the shifting stops here
                     p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                             "\\" + e.getPageName() + ".class"); //load the current page
-                    assert p != null;
+                    assert p != null; // IntelliJ's precautionary measures against NullPointerException
                     p.setName(e.getPageName()); // setting the name of the page
                     p.getRecords().insertElementAt(temp, 0); // inserting the maximum of the previous page as the minimum in the next page
                     e.setMinimumRecord(p.getRecords().get(0)); // updating the minimum of the current Page Detail in question
@@ -214,7 +214,7 @@ public class Table implements Serializable{
                 }else { // if the page in question is also empty, same process with minor differences
                     p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                             "\\" + e.getPageName() + ".class"); //load the current page
-                    assert p != null;
+                    assert p != null; // IntelliJ's precautionary measures against NullPointerException
                     p.setName(e.getPageName()); // setting the name of the page
                     p.getRecords().insertElementAt(temp, 0); // inserting the maximum of the previous page as the minimum in the next page
                     e.setMinimumRecord(p.getRecords().get(0)); // updating the minimum of the current Page Detail in question
@@ -239,7 +239,7 @@ public class Table implements Serializable{
     public void delete(String strClusteringKey, Hashtable<String,Object> htblColNameValue) {
         Page p = null; // creating a page variable
         if(strClusteringKey != null){ // having the clustering key means that we will delete only one record. So binary search.
-            for(PageDetails e : details){
+            for(PageDetails e : details){ // looping over all the page details
                 int compareMin = compareWith(htblColNameValue.get(strClusteringKey),
                         e.getMinimumRecord().get(strClusteringKey)); // comparing the input with the minimum record in the page
                 int compareMax = compareWith(htblColNameValue.get(strClusteringKey),
@@ -247,7 +247,7 @@ public class Table implements Serializable{
                 if(compareMin == 0){ // checking if the input record is equal to the minimum
                     p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                             "\\" + e.getPageName() + ".class"); //load the current page
-                    assert p != null;
+                    assert p != null; // IntelliJ's precautionary measures against NullPointerException
                     p.setName(e.getPageName()); // setting the name of the page
                     p.getRecords().remove(0); // removing the minimum record
                     numberOfRecords--; // decrementing the number of records by one
@@ -257,13 +257,14 @@ public class Table implements Serializable{
                         page.delete(); // deleting the page
                         details.remove(e); // removing the details of the page from the details vector
                         return; // exiting out of the method entirely.
-                    }else // if the page is not empty
+                    }else{ // if the page is not empty
                         e.setMinimumRecord(p.getRecords().get(0)); // updating the minimum value
-
+                        e.setFull(false); // if the page was already full before deletion then it is not full after deletion
+                    }
                 }else if(compareMax == 0){ // checking if the input record is equal to the maximum
                     p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
                             "\\" + e.getPageName() + ".class"); //load the current page
-                    assert p != null;
+                    assert p != null; // IntelliJ's precautionary measures against NullPointerException
                     p.setName(e.getPageName()); // setting the name of the page
                     p.getRecords().remove(p.getRecords().size() - 1); // removing the maximum record
                     numberOfRecords--; // decrementing the number of records by one
@@ -273,8 +274,10 @@ public class Table implements Serializable{
                         page.delete(); // deleting the page
                         details.remove(e); // removing the details of the page from the details vector
                         return; // exiting out of the method entirely.
-                    }else // if the page is not empty
+                    }else{ // if the page is not empty
                         e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1)); // updating the maximum value
+                        e.setFull(false); // if the page was already full before deletion then it is not full after deletion
+                    }
                 }else if(compareMin > 0 && compareMax < 0){ // checking if the input record is within the page
                     //TODO
                 }
