@@ -237,7 +237,7 @@ public class Table implements Serializable{
     }
 
     public void delete(String strClusteringKey, Hashtable<String,Object> htblColNameValue) {
-        Page p; // creating a page variable
+        Page p = null; // creating a page variable
         if(strClusteringKey != null){ // having the clustering key means that we will delete only one record. So binary search.
             for(PageDetails e : details){
                 int compareMin = compareWith(htblColNameValue.get(strClusteringKey),
@@ -245,9 +245,36 @@ public class Table implements Serializable{
                 int compareMax = compareWith(htblColNameValue.get(strClusteringKey),
                         e.getMaximumRecord().get(strClusteringKey)); // comparing the input with the maximum record in the page
                 if(compareMin == 0){ // checking if the input record is equal to the minimum
-                    //TODO
+                    p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
+                            "\\" + e.getPageName() + ".class"); //load the current page
+                    assert p != null;
+                    p.setName(e.getPageName()); // setting the name of the page
+                    p.getRecords().remove(0); // removing the minimum record
+                    numberOfRecords--; // decrementing the number of records by one
+                    if(p.isEmpty()){ // checking if the page is empty after deletion
+                        File page = new File(".\\" + DBApp.getStrCurrentDatabaseName() +
+                                "\\" + e.getPageName() + ".class"); // creating a file object to be able to delete the page
+                        page.delete(); // deleting the page
+                        details.remove(e); // removing the details of the page from the details vector
+                        return; // exiting out of the method entirely.
+                    }else // if the page is not empty
+                        e.setMinimumRecord(p.getRecords().get(0)); // updating the minimum value
+
                 }else if(compareMax == 0){ // checking if the input record is equal to the maximum
-                    //TODO
+                    p = loadPage(".\\" + DBApp.getStrCurrentDatabaseName() +
+                            "\\" + e.getPageName() + ".class"); //load the current page
+                    assert p != null;
+                    p.setName(e.getPageName()); // setting the name of the page
+                    p.getRecords().remove(p.getRecords().size() - 1); // removing the maximum record
+                    numberOfRecords--; // decrementing the number of records by one
+                    if(p.isEmpty()){ // checking if the page is empty after deletion
+                        File page = new File(".\\" + DBApp.getStrCurrentDatabaseName() +
+                                "\\" + e.getPageName() + ".class"); // creating a file object to be able to delete the page
+                        page.delete(); // deleting the page
+                        details.remove(e); // removing the details of the page from the details vector
+                        return; // exiting out of the method entirely.
+                    }else // if the page is not empty
+                        e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1)); // updating the maximum value
                 }else if(compareMin > 0 && compareMax < 0){ // checking if the input record is within the page
                     //TODO
                 }

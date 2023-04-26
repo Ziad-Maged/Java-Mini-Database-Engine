@@ -81,8 +81,8 @@ public class Page{
         }
     }
 
-    public void insertRecord(String strClustringKey, Hashtable<String, Object> htblColNameValue){
-
+    public boolean isEmpty(){
+        return records.isEmpty();
     }
 
     public String toString(){
