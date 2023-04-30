@@ -160,6 +160,8 @@ public class DBApp {
         else if(htblColNameValue.size() > htblColNameType.size())
             throw new InvalidInputException("The table of interest has " +
                     htblColNameType.size() + " Columns only.");
+        else if(inserting && !htblColNameValue.containsKey(strClusteringKey))
+            throw new InvalidInputException("The clustering key is not available as input");
         for(String e : htblColNameType.keySet()){
             if((htblColNameType.get(e).equals("java.lang.Integer") &&
                     !(htblColNameValue.get(e) instanceof Integer)) ||
