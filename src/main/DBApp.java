@@ -161,7 +161,11 @@ public class DBApp {
             throw new InvalidInputException("The table of interest has " +
                     htblColNameType.size() + " Columns only.");
         else if(inserting && !htblColNameValue.containsKey(strClusteringKey))
-            throw new InvalidInputException("The clustering key is not available as input");
+            throw new InvalidInputException("The clustering key is not available as input.");
+        else if(inserting)
+            for(String e : htblColNameValue.keySet())
+                if(!htblColNameType.containsKey(e))
+                    throw new InvalidInputException("The column names entered do not match those of the table.");
         for(String e : htblColNameType.keySet()){
             if((htblColNameType.get(e).equals("java.lang.Integer") &&
                     !(htblColNameValue.get(e) instanceof Integer)) ||
