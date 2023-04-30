@@ -158,7 +158,8 @@ public class DBApp {
         if(htblColNameType.isEmpty())
             throw new TableDoesNotExistException(strTableName  + " table does not exist");
         else if(htblColNameValue.size() > htblColNameType.size())
-            throw new InvalidInputException("The table of interest has " + htblColNameType.size() + "Columns only.");
+            throw new InvalidInputException("The table of interest has " +
+                    htblColNameType.size() + " Columns only.");
         for(String e : htblColNameType.keySet()){
             if((htblColNameType.get(e).equals("java.lang.Integer") &&
                     !(htblColNameValue.get(e) instanceof Integer)) ||
