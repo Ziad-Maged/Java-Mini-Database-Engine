@@ -69,9 +69,9 @@ public class Page{
         this.id = id;
     }
 
-    public void savePage(String path) {
+    public void savePage() {
         try{
-            FileOutputStream fileOut = new FileOutputStream(path + "\\" + name + ".class");
+            FileOutputStream fileOut = new FileOutputStream("src/main/resources/Data/" + name + ".class");
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
             out.writeObject(records);
             fileOut.close();

@@ -91,7 +91,7 @@ public class DBApp {
             }
             writer.close();
             Table table = new Table(strTableName);
-            table.saveTable(".\\" + strCurrentDatabaseName);
+            table.saveTable();
         }catch(Exception e) {
             System.out.println(e.getMessage());
         }
@@ -224,11 +224,11 @@ public class DBApp {
                 table.setNumberOfRecords(1);
                 Page page = new Page(table.getTableName(), table.getNumberOfPages());
                 page.getRecords().add(htblColNameValue);
-                table.addNewPage(".\\" + strCurrentDatabaseName, page);
+                table.addNewPage(page);
             }else{
                 table.insert(parameters[0].toString(), htblColNameValue);
             }
-            table.saveTable(".\\" + strCurrentDatabaseName);
+            table.saveTable();
         }catch(IOException | ClassNotFoundException e){
             System.out.println(e.getMessage());
         }
@@ -252,7 +252,7 @@ public class DBApp {
             fileIn.close();
             in.close();
             table.update(parameters[0].toString(), parameters[3], htblColNameValue);
-            table.saveTable(".\\" + strCurrentDatabaseName);
+            table.saveTable();
         }catch(IOException | ClassNotFoundException e){
             System.out.println(e.getMessage());
         }
@@ -286,7 +286,7 @@ public class DBApp {
                 else
                     table.delete(null, htblColNameValue);
             }
-            table.saveTable(".\\" + strCurrentDatabaseName);
+            table.saveTable();
         }catch (IOException | ClassNotFoundException e){
             System.out.println(e.getMessage());
         }
