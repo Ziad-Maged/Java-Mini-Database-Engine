@@ -321,6 +321,8 @@ public class Table implements Serializable{
                 if(p.isEmpty()) // checking to see if the page becomes empty after serial deletion
                     pagesToDelete.add(e); // adding the page to the vector in case the page is found to be empty
             }
+            p = null;
+            System.gc();
             for(PageDetails e : pagesToDelete){ // looping over the vector to delete the pages that need to be deleted
                 File page = new File(".\\" + DBApp.getStrCurrentDatabaseName() +
                         "\\" + e.getPageName() + ".class"); // creating a file variable that targets the page in question
@@ -374,6 +376,8 @@ public class Table implements Serializable{
                 }
             }
         }
+        p = null;
+        System.gc();
     }
 
     public String toString(){
