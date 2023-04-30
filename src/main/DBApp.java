@@ -8,6 +8,7 @@ import com.opencsv.CSVWriter;
 
 import java.io.*;
 import exceptions.*;
+import miscellaneous.Null;
 
 public class DBApp {
 
@@ -105,16 +106,16 @@ public class DBApp {
                                   Hashtable<String, String> htblColNameMax) throws DBAppException{
         for(String e : htblColNameValue.keySet()){
             if(htblColNameValue.get(e) instanceof Integer &&
-                    ((Integer)htblColNameValue.get(e)).compareTo(Integer.parseInt(htblColNameMin.get(e))) < 0
-            && ((Integer)htblColNameValue.get(e)).compareTo(Integer.parseInt(htblColNameMin.get(e))) > 0){
+                    (((Integer)htblColNameValue.get(e)).compareTo(Integer.parseInt(htblColNameMin.get(e))) < 0
+            || ((Integer)htblColNameValue.get(e)).compareTo(Integer.parseInt(htblColNameMin.get(e))) > 0)){
                 throw new InvalidInputException("The input value is less than the minimum or greater than the maximum");
             }else if(htblColNameValue.get(e) instanceof Double &&
-                    ((Double)htblColNameValue.get(e)).compareTo(Double.parseDouble(htblColNameMin.get(e))) < 0
-                    && ((Double)htblColNameValue.get(e)).compareTo(Double.parseDouble(htblColNameMin.get(e))) > 0){
+                    (((Double)htblColNameValue.get(e)).compareTo(Double.parseDouble(htblColNameMin.get(e))) < 0
+                    || ((Double)htblColNameValue.get(e)).compareTo(Double.parseDouble(htblColNameMin.get(e))) > 0)){
                 throw new InvalidInputException("The input value is less than the minimum or greater than the maximum");
             }else if(htblColNameValue.get(e) instanceof String &&
-                    ((String)htblColNameValue.get(e)).compareTo(htblColNameMin.get(e)) < 0
-                    && ((String)htblColNameValue.get(e)).compareTo(htblColNameMin.get(e)) > 0){
+                    (((String)htblColNameValue.get(e)).compareTo(htblColNameMin.get(e)) < 0
+                    || ((String)htblColNameValue.get(e)).compareTo(htblColNameMin.get(e)) > 0)){
                 throw new InvalidInputException("The input value is less than the minimum or greater than the maximum");
             }else if(htblColNameValue.get(e) instanceof Date){
                 try{
@@ -122,7 +123,7 @@ public class DBApp {
                     Date inputDate = (Date) htblColNameValue.get(e);
                     Date minDate = formatter.parse(htblColNameMin.get(e));
                     Date maxDate = formatter.parse(htblColNameMax.get(e));
-                    if(inputDate.compareTo(minDate) < 0 && inputDate.compareTo(maxDate) > 0)
+                    if(inputDate.compareTo(minDate) < 0 || inputDate.compareTo(maxDate) > 0)
                         throw new InvalidInputException();
                 }catch(Exception e1){
                     throw new InvalidInputException("Date not entered correctly");
@@ -133,7 +134,7 @@ public class DBApp {
 
     private Object[] getTableDetails(String strTableName,
                                      Hashtable<String, Object> htblColNameValue,
-                                     String strClusteringKeyValue) throws DBAppException, IOException {
+                                     String strClusteringKeyValue, boolean inserting) throws DBAppException, IOException {
         Object[] result = new Object[4];
         Hashtable<String, String> htblColNameType = new Hashtable<>();
         Hashtable<String, String> htblColNameMin = new Hashtable<>();
@@ -166,6 +167,9 @@ public class DBApp {
                     (htblColNameType.get(e).equals("java.util.Date") &&
                             !(htblColNameValue.get(e) instanceof Date)))
                 throw new TypeMissMatchException(e + " is of type " + htblColNameType.get(e));
+            if(inserting && htblColNameValue.size() < htblColNameType.size())
+                if(!htblColNameValue.containsKey(e))
+                    htblColNameValue.put(e, new Null());
         }
         if(strClusteringKeyValue != null){
             try{
@@ -195,7 +199,8 @@ public class DBApp {
     public void insertIntoTable(String strTableName,
                                 Hashtable<String, Object> htblColNameValue) throws DBAppException{
         try{
-            Object[] parameters = getTableDetails(strTableName, htblColNameValue, null);
+            Object[] parameters = getTableDetails(strTableName, htblColNameValue,
+                    null, true);
             checkMinMaxInput(htblColNameValue, (Hashtable<String, String>) parameters[1],
                     (Hashtable<String, String>) parameters[2]);
             Table table;
@@ -226,7 +231,8 @@ public class DBApp {
         try{
             if(strClusteringKeyValue == null || strClusteringKeyValue.equals(""))
                 throw new InvalidInputException("Clustering Key value should not be empty");
-            Object[] parameters = getTableDetails(strTableName, htblColNameValue, strClusteringKeyValue);
+            Object[] parameters = getTableDetails(strTableName, htblColNameValue,
+                    strClusteringKeyValue, false);
             checkMinMaxInput(htblColNameValue, (Hashtable<String, String>) parameters[1],
                     (Hashtable<String, String>) parameters[2]);
             Table table;
@@ -245,7 +251,8 @@ public class DBApp {
 
     public void deleteFromTable(String strTableName, Hashtable<String,Object> htblColNameValue) throws DBAppException{
         try{
-            Object[] parameters = getTableDetails(strTableName, htblColNameValue, null);
+            Object[] parameters = getTableDetails(strTableName, htblColNameValue,
+                    null, false);
             checkMinMaxInput(htblColNameValue, (Hashtable<String, String>) parameters[1],
                     (Hashtable<String, String>) parameters[2]);
             Table table;
