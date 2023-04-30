@@ -1,6 +1,6 @@
-package exceptions;
+package main.java.exceptions;
 
-public class InvalidInputException extends DBAppException{
+public class InvalidInputException extends DBAppException {
 
     public InvalidInputException(){
         super();

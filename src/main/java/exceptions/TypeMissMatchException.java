@@ -1,6 +1,4 @@
-package exceptions;
-
-import main.DBApp;
+package main.java.exceptions;
 
 public class TypeMissMatchException extends DBAppException {
 

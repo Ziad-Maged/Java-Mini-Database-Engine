@@ -1,4 +1,4 @@
-package main;
+package main.java.main;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -7,8 +7,8 @@ import java.util.*;
 import com.opencsv.CSVWriter;
 
 import java.io.*;
-import exceptions.*;
-import miscellaneous.Null;
+import main.java.exceptions.*;
+import main.java.miscellaneous.Null;
 
 public class DBApp {
 
@@ -48,7 +48,7 @@ public class DBApp {
     public void createTable(String strTableName, String strClusteringKeyColumn,
                             Hashtable<String, String> htblColNameType,
                             Hashtable<String, String> htblColNameMin,
-                            Hashtable<String, String> htblColNameMax) throws DBAppException{
+                            Hashtable<String, String> htblColNameMax) throws DBAppException {
         for(String e : htblColNameType.values()) {
             if(!e.equals("java.lang.Integer") && !e.equals("java.lang.Double") &&
                     !e.equals("java.util.Date") && !e.equals("java.lang.String")) {
@@ -97,13 +97,13 @@ public class DBApp {
         }
     }
 
-    public void createIndex(String strTableName, String[] strarrColName) throws DBAppException{
+    public void createIndex(String strTableName, String[] strarrColName) throws DBAppException {
         //TODO IN MILESTONE TWO
     }
 
     private void checkMinMaxInput(Hashtable<String, Object> htblColNameValue,
                                   Hashtable<String, String> htblColNameMin,
-                                  Hashtable<String, String> htblColNameMax) throws DBAppException{
+                                  Hashtable<String, String> htblColNameMax) throws DBAppException {
         for(String e : htblColNameValue.keySet()){
             if(htblColNameValue.get(e) instanceof Integer &&
                     (((Integer)htblColNameValue.get(e)).compareTo(Integer.parseInt(htblColNameMin.get(e))) < 0
@@ -206,7 +206,7 @@ public class DBApp {
     }
 
     public void insertIntoTable(String strTableName,
-                                Hashtable<String, Object> htblColNameValue) throws DBAppException{
+                                Hashtable<String, Object> htblColNameValue) throws DBAppException {
         try{
             Object[] parameters = getTableDetails(strTableName, htblColNameValue,
                     null, true);
@@ -236,7 +236,7 @@ public class DBApp {
 
     public void updateTable(String strTableName,
                             String strClusteringKeyValue,
-                            Hashtable<String,Object> htblColNameValue) throws DBAppException{
+                            Hashtable<String,Object> htblColNameValue) throws DBAppException {
         try{
             if(strClusteringKeyValue == null || strClusteringKeyValue.equals(""))
                 throw new InvalidInputException("Clustering Key value should not be empty");
@@ -258,7 +258,7 @@ public class DBApp {
         }
     }
 
-    public void deleteFromTable(String strTableName, Hashtable<String,Object> htblColNameValue) throws DBAppException{
+    public void deleteFromTable(String strTableName, Hashtable<String,Object> htblColNameValue) throws DBAppException {
         try{
             Object[] parameters = getTableDetails(strTableName, htblColNameValue,
                     null, false);
@@ -292,7 +292,7 @@ public class DBApp {
         }
     }
 
-    public Iterator selectFromTable(SQLTerm[] arrSQLTerms, String[] strarrOperators) throws DBAppException{
+    public Iterator selectFromTable(SQLTerm[] arrSQLTerms, String[] strarrOperators) throws DBAppException {
         //TODO LATER
         return null;
     }

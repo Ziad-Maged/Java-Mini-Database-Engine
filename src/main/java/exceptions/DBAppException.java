@@ -1,6 +1,4 @@
-package exceptions;
-
-import main.DBApp;
+package main.java.exceptions;
 
 abstract public class DBAppException extends Exception{
     public DBAppException(){

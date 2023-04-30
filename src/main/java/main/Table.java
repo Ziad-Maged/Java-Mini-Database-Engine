@@ -1,6 +1,5 @@
-package main;
-import exceptions.DBAppException;
-import exceptions.InvalidInputException;
+package main.java.main;
+import main.java.exceptions.*;
 
 import java.io.*;
 import java.util.*;
