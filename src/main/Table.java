@@ -232,9 +232,9 @@ public class Table implements Serializable{
             p.getRecords().add(temp); // inserting the maximum of the last page in the table as the minimum in the new page
             addNewPage(".\\" + DBApp.getStrCurrentDatabaseName(), p); // adding the new page to the table's details and saving it
         }
+        p = null;
+        System.gc();
         numberOfRecords++; // incrementing the number of records in the table after each successful insertion
-        this.saveTable(".\\" + DBApp.getStrCurrentDatabaseName() +
-                "\\" + tableName + ".class"); // saving the details of the table after insertion
     }
 
     private boolean toBeDeleted(Hashtable<String, Object> record, Hashtable<String, Object> values){

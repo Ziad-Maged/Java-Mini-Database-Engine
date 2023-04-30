@@ -107,15 +107,15 @@ public class DBApp {
         for(String e : htblColNameValue.keySet()){
             if(htblColNameValue.get(e) instanceof Integer &&
                     (((Integer)htblColNameValue.get(e)).compareTo(Integer.parseInt(htblColNameMin.get(e))) < 0
-            || ((Integer)htblColNameValue.get(e)).compareTo(Integer.parseInt(htblColNameMin.get(e))) > 0)){
+            || ((Integer)htblColNameValue.get(e)).compareTo(Integer.parseInt(htblColNameMax.get(e))) > 0)){
                 throw new InvalidInputException("The input value is less than the minimum or greater than the maximum");
             }else if(htblColNameValue.get(e) instanceof Double &&
                     (((Double)htblColNameValue.get(e)).compareTo(Double.parseDouble(htblColNameMin.get(e))) < 0
-                    || ((Double)htblColNameValue.get(e)).compareTo(Double.parseDouble(htblColNameMin.get(e))) > 0)){
+                    || ((Double)htblColNameValue.get(e)).compareTo(Double.parseDouble(htblColNameMax.get(e))) > 0)){
                 throw new InvalidInputException("The input value is less than the minimum or greater than the maximum");
             }else if(htblColNameValue.get(e) instanceof String &&
                     (((String)htblColNameValue.get(e)).compareTo(htblColNameMin.get(e)) < 0
-                    || ((String)htblColNameValue.get(e)).compareTo(htblColNameMin.get(e)) > 0)){
+                    || ((String)htblColNameValue.get(e)).compareTo(htblColNameMax.get(e)) > 0)){
                 throw new InvalidInputException("The input value is less than the minimum or greater than the maximum");
             }else if(htblColNameValue.get(e) instanceof Date){
                 try{
