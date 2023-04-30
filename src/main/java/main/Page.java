@@ -71,7 +71,7 @@ public class Page{
 
     public void savePage() {
         try{
-            FileOutputStream fileOut = new FileOutputStream("src/main/resources/Data/" + name + ".class");
+            FileOutputStream fileOut = new FileOutputStream("src/main/resources/data/" + name + ".class");
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
             out.writeObject(records);
             fileOut.close();

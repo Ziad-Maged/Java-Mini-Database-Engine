@@ -12,34 +12,35 @@ import main.java.miscellaneous.Null;
 
 public class DBApp {
 
-    private static String strCurrentDatabaseName;
+    private static String strCurrentdatabaseName;
 
     public void init() {
-        createMetadata("Database");
-        selectDatabase("Database");
+        createMetadata();
     }
     //creating directory
-    public void createMetadata(String strDatabaseName) {
-        File temp = new File("src/main/resources/Data/metadata.csv");
+    public void createMetadata() {
+        File temp = new File("src/main/resources/metadata.csv");
         try {
             if(!temp.createNewFile())
                 System.out.println("File Already Exists");
+            else{
+                try {
+                    FileWriter outputFile = new FileWriter(temp);
+                    CSVWriter writer = new CSVWriter(outputFile);
+                    String[] header = {"Table Name", "Column Name", "Column Type", "ClusteringKey", "IndexName",
+                            "IndexType", "min", "max"};
+                    writer.writeNext(header);
+                    writer.close();
+                }catch(Exception ignored) {
+                }
+            }
         } catch (IOException e1) {
             e1.printStackTrace();
         }
-        try {
-            FileWriter outputFile = new FileWriter(temp);
-            CSVWriter writer = new CSVWriter(outputFile);
-            String[] header = {"Table Name", "Column Name", "Column Type", "ClusteringKey", "IndexName",
-                    "IndexType", "min", "max"};
-            writer.writeNext(header);
-            writer.close();
-        }catch(Exception ignored) {
-        }
     }
 
-    public static void selectDatabase(String strDatabaseName) {
-        strCurrentDatabaseName = strDatabaseName;
+    public static void selectdatabase(String strdatabaseName) {
+        strCurrentdatabaseName = strdatabaseName;
     }
 
     public void createTable(String strTableName, String strClusteringKeyColumn,
@@ -53,14 +54,14 @@ public class DBApp {
             }
         }
 
-        File temp = new File("src/main/resources/Data/metadata.csv");
+        File temp = new File("src/main/resources/metadata.csv");
         try {
 
-            BufferedReader br = new BufferedReader(new FileReader("src/main/resources/Data/metadata.csv"));
-            List<String[]> currentMetaDataStringList = new ArrayList<>();
+            BufferedReader br = new BufferedReader(new FileReader("src/main/resources/metadata.csv"));
+            List<String[]> currentMetadataStringList = new ArrayList<>();
             String s = br.readLine();
             while(s != null) {
-                currentMetaDataStringList.add(s.split(","));
+                currentMetadataStringList.add(s.split(","));
                 if(s.contains(strTableName)) {
                     br.close();
                     throw new TableAlreadyExistsException("Cannot have two tables with the same name.");
@@ -71,7 +72,7 @@ public class DBApp {
             FileWriter outputFile = new FileWriter(temp);
             CSVWriter writer = new CSVWriter(outputFile, ',',
                     CSVWriter.NO_QUOTE_CHARACTER, CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END);
-            writer.writeAll(currentMetaDataStringList);
+            writer.writeAll(currentMetadataStringList);
             String[] header = {strTableName, "", "", "", "", "", "", ""};
             for(Map.Entry<String, String> e : htblColNameType.entrySet()) {
                 header[1] = e.getKey();
@@ -137,7 +138,7 @@ public class DBApp {
         Hashtable<String, String> htblColNameMax = new Hashtable<>();
         String strClusteringKey = "";
         Object objClusteringKeyValue = strClusteringKeyValue;
-        BufferedReader br = new BufferedReader(new FileReader("src/main/resources/Data/metadata.csv"));
+        BufferedReader br = new BufferedReader(new FileReader("src/main/resources/metadata.csv"));
         String s = br.readLine();
         while(s != null){
             String[] header = s.split(",");
@@ -157,7 +158,7 @@ public class DBApp {
                     htblColNameType.size() + " Columns only.");
         else if(inserting && !htblColNameValue.containsKey(strClusteringKey))
             throw new InvalidInputException("The clustering key is not available as input.");
-        else if(inserting)
+        else
             for(String e : htblColNameValue.keySet())
                 if(!htblColNameType.containsKey(e))
                     throw new InvalidInputException("The column names entered do not match those of the table.");
@@ -171,7 +172,7 @@ public class DBApp {
                     (htblColNameType.get(e).equals("java.util.Date") &&
                             !(htblColNameValue.get(e) instanceof Date)))
                 throw new TypeMissMatchException(e + " is of type " + htblColNameType.get(e));
-            if(inserting && htblColNameValue.size() < htblColNameType.size())
+            if(inserting && (htblColNameValue.size() < htblColNameType.size()))
                 if(!htblColNameValue.containsKey(e))
                     htblColNameValue.put(e, new Null());
         }
@@ -208,7 +209,7 @@ public class DBApp {
             checkMinMaxInput(htblColNameValue, (Hashtable<String, String>) parameters[1],
                     (Hashtable<String, String>) parameters[2]);
             Table table;
-            FileInputStream fileIn = new FileInputStream("src/main/resources/Data/" + strTableName + ".class");
+            FileInputStream fileIn = new FileInputStream("src/main/resources/data/" + strTableName + ".class");
             ObjectInputStream in = new ObjectInputStream(fileIn);
             table = (Table) in.readObject();
             fileIn.close();
@@ -238,8 +239,10 @@ public class DBApp {
                     strClusteringKeyValue, false);
             checkMinMaxInput(htblColNameValue, (Hashtable<String, String>) parameters[1],
                     (Hashtable<String, String>) parameters[2]);
+            if(htblColNameValue.containsKey(parameters[0].toString()))
+                throw new InvalidInputException("Cannot update Clustering Key");
             Table table;
-            FileInputStream fileIn = new FileInputStream("src/main/resources/Data/" + strTableName + ".class");
+            FileInputStream fileIn = new FileInputStream("src/main/resources/data/" + strTableName + ".class");
             ObjectInputStream in = new ObjectInputStream(fileIn);
             table = (Table) in.readObject();
             fileIn.close();
@@ -258,7 +261,7 @@ public class DBApp {
             checkMinMaxInput(htblColNameValue, (Hashtable<String, String>) parameters[1],
                     (Hashtable<String, String>) parameters[2]);
             Table table;
-            FileInputStream fileIn = new FileInputStream("src/main/resources/Data/" + strTableName + ".class");
+            FileInputStream fileIn = new FileInputStream("src/main/resources/data/" + strTableName + ".class");
             ObjectInputStream in = new ObjectInputStream(fileIn);
             table = (Table) in.readObject();
             fileIn.close();
@@ -289,77 +292,77 @@ public class DBApp {
         return null;
     }
 
-    public static String getStrCurrentDatabaseName() {
-        return strCurrentDatabaseName;
+    public static String getStrCurrentdatabaseName() {
+        return strCurrentdatabaseName;
     }
 
 
-    public static void main(String[] args) throws Exception {
-        DBApp app = new DBApp();
-        app.init();
-        Hashtable<String, String> htblColNameType = new Hashtable<>();
-        Hashtable<String, String> htblColNameMin = new Hashtable<>();
-        Hashtable<String, String> htblColNameMax = new Hashtable<>();
-        htblColNameType.put("id", "java.lang.Integer");
-        htblColNameMin.put("id", "1");
-        htblColNameMax.put("id", "1000");
-        app.createTable("Test1", "id", htblColNameType, htblColNameMin, htblColNameMax);
-
-        Hashtable<String, Object> htblColNameValue = new Hashtable<>();
-        htblColNameValue.put("id", 1);
-        app.insertIntoTable("Test1", htblColNameValue);
-        htblColNameValue.clear();
-        htblColNameValue.put("id", 10);
-        app.insertIntoTable("Test1", htblColNameValue);
-        htblColNameValue.clear();
-        htblColNameValue.put("id", 5);
-        app.insertIntoTable("Test1", htblColNameValue);
-        htblColNameValue.clear();
-        htblColNameValue.put("id", 7);
-        app.insertIntoTable("Test1", htblColNameValue);
-        htblColNameValue.clear();
-        htblColNameValue.put("id", 50);
-        app.insertIntoTable("Test1", htblColNameValue);
-        htblColNameValue.clear();
-        htblColNameValue.put("id", 28);
-        app.insertIntoTable("Test1", htblColNameValue);
-        htblColNameValue.clear();
-        htblColNameValue.put("id", 22);
-        app.insertIntoTable("Test1", htblColNameValue);
-        htblColNameValue.clear();
-        htblColNameValue.put("id", 81);
-        app.insertIntoTable("Test1", htblColNameValue);
-        htblColNameValue.clear();
-        htblColNameValue.put("id", 20);
-        app.insertIntoTable("Test1", htblColNameValue);
-        htblColNameValue.clear();
-        htblColNameValue.put("id", 21);
-        app.insertIntoTable("Test1", htblColNameValue);
-        htblColNameValue.clear();
-        htblColNameValue.put("id", 80);
-        app.insertIntoTable("Test1", htblColNameValue);
-        htblColNameValue.clear();
-        htblColNameValue.put("id", 30);
-        app.insertIntoTable("Test1", htblColNameValue);
-        htblColNameValue.clear();
-        htblColNameValue.put("id", 23);
-        app.insertIntoTable("Test1", htblColNameValue);
-        htblColNameValue.clear();
-        htblColNameValue.put("id", 24);
-        app.insertIntoTable("Test1", htblColNameValue);
-        htblColNameValue.clear();
-        htblColNameValue.put("id", 33);
-        app.insertIntoTable("Test1", htblColNameValue);
-        htblColNameValue.clear();
-
-        FileInputStream fileIn = new FileInputStream("src/main/resources/Data/Test1.class");
-        ObjectInputStream in = new ObjectInputStream(fileIn);
-        Table t = (Table) in.readObject();
-        fileIn.close();
-        in.close();
-        System.out.println(t);
-
-
-    }
+//    public static void main(String[] args) throws Exception {
+//        DBApp app = new DBApp();
+//        app.init();
+//        Hashtable<String, String> htblColNameType = new Hashtable<>();
+//        Hashtable<String, String> htblColNameMin = new Hashtable<>();
+//        Hashtable<String, String> htblColNameMax = new Hashtable<>();
+//        htblColNameType.put("id", "java.lang.Integer");
+//        htblColNameMin.put("id", "1");
+//        htblColNameMax.put("id", "1000");
+//        app.createTable("Test1", "id", htblColNameType, htblColNameMin, htblColNameMax);
+//
+//        Hashtable<String, Object> htblColNameValue = new Hashtable<>();
+//        htblColNameValue.put("id", 1);
+//        app.insertIntoTable("Test1", htblColNameValue);
+//        htblColNameValue.clear();
+//        htblColNameValue.put("id", 10);
+//        app.insertIntoTable("Test1", htblColNameValue);
+//        htblColNameValue.clear();
+//        htblColNameValue.put("id", 5);
+//        app.insertIntoTable("Test1", htblColNameValue);
+//        htblColNameValue.clear();
+//        htblColNameValue.put("id", 7);
+//        app.insertIntoTable("Test1", htblColNameValue);
+//        htblColNameValue.clear();
+//        htblColNameValue.put("id", 50);
+//        app.insertIntoTable("Test1", htblColNameValue);
+//        htblColNameValue.clear();
+//        htblColNameValue.put("id", 28);
+//        app.insertIntoTable("Test1", htblColNameValue);
+//        htblColNameValue.clear();
+//        htblColNameValue.put("id", 22);
+//        app.insertIntoTable("Test1", htblColNameValue);
+//        htblColNameValue.clear();
+//        htblColNameValue.put("id", 81);
+//        app.insertIntoTable("Test1", htblColNameValue);
+//        htblColNameValue.clear();
+//        htblColNameValue.put("id", 20);
+//        app.insertIntoTable("Test1", htblColNameValue);
+//        htblColNameValue.clear();
+//        htblColNameValue.put("id", 21);
+//        app.insertIntoTable("Test1", htblColNameValue);
+//        htblColNameValue.clear();
+//        htblColNameValue.put("id", 80);
+//        app.insertIntoTable("Test1", htblColNameValue);
+//        htblColNameValue.clear();
+//        htblColNameValue.put("id", 30);
+//        app.insertIntoTable("Test1", htblColNameValue);
+//        htblColNameValue.clear();
+//        htblColNameValue.put("id", 23);
+//        app.insertIntoTable("Test1", htblColNameValue);
+//        htblColNameValue.clear();
+//        htblColNameValue.put("id", 24);
+//        app.insertIntoTable("Test1", htblColNameValue);
+//        htblColNameValue.clear();
+//        htblColNameValue.put("id", 33);
+//        app.insertIntoTable("Test1", htblColNameValue);
+//        htblColNameValue.clear();
+//
+//        FileInputStream fileIn = new FileInputStream("src/main/resources/data/Test1.class");
+//        ObjectInputStream in = new ObjectInputStream(fileIn);
+//        Table t = (Table) in.readObject();
+//        fileIn.close();
+//        in.close();
+//        System.out.println(t);
+//
+//
+//    }
 
 }
