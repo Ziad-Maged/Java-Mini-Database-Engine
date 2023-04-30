@@ -286,4 +286,73 @@ public class DBApp {
         return null;
     }
 
+
+    public static void main(String[] args) throws Exception {
+        DBApp app = new DBApp();
+        app.init();
+        Hashtable<String, String> htblColNameType = new Hashtable<>();
+        Hashtable<String, String> htblColNameMin = new Hashtable<>();
+        Hashtable<String, String> htblColNameMax = new Hashtable<>();
+        htblColNameType.put("id", "java.lang.Integer");
+        htblColNameMin.put("id", "1");
+        htblColNameMax.put("id", "1000");
+        app.createTable("Test1", "id", htblColNameType, htblColNameMin, htblColNameMax);
+
+        Hashtable<String, Object> htblColNameValue = new Hashtable<>();
+        htblColNameValue.put("id", 1);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 10);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 5);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 7);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 50);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 28);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 22);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 81);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 20);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 21);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 80);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 30);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 23);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 24);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+        htblColNameValue.put("id", 33);
+        app.insertIntoTable("Test1", htblColNameValue);
+        htblColNameValue.clear();
+
+        FileInputStream fileIn = new FileInputStream("src/main/resources/data/Test1.class");
+        ObjectInputStream in = new ObjectInputStream(fileIn);
+        Table t = (Table) in.readObject();
+        fileIn.close();
+        in.close();
+        System.out.println(t);
+
+
+    }
+
 }
