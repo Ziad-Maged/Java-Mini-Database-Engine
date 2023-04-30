@@ -15,15 +15,12 @@ public class DBApp {
     private static String strCurrentDatabaseName;
 
     public void init() {
-        createDatabase("Database");
+        createMetadata("Database");
         selectDatabase("Database");
     }
     //creating directory
-    public void createDatabase(String strDatabaseName) {
-        File temp = new File(strDatabaseName);
-        if(!temp.mkdir())
-            System.out.println("Database Already Exits");
-        temp = new File(".\\" + strDatabaseName + "\\metadata.csv");
+    public void createMetadata(String strDatabaseName) {
+        File temp = new File("src/main/resources/Data/metadata.csv");
         try {
             if(!temp.createNewFile())
                 System.out.println("File Already Exists");
@@ -56,11 +53,10 @@ public class DBApp {
             }
         }
 
-        File temp = new File(".\\" + strCurrentDatabaseName + "\\metadata.csv");
+        File temp = new File("src/main/resources/Data/metadata.csv");
         try {
 
-            BufferedReader br = new BufferedReader(new FileReader(".\\" + strCurrentDatabaseName +
-                    "\\metadata.csv"));
+            BufferedReader br = new BufferedReader(new FileReader("src/main/resources/Data/metadata.csv"));
             List<String[]> currentMetaDataStringList = new ArrayList<>();
             String s = br.readLine();
             while(s != null) {
@@ -141,8 +137,7 @@ public class DBApp {
         Hashtable<String, String> htblColNameMax = new Hashtable<>();
         String strClusteringKey = "";
         Object objClusteringKeyValue = strClusteringKeyValue;
-        BufferedReader br = new BufferedReader(new FileReader(".\\" + strCurrentDatabaseName +
-                "\\metadata.csv"));
+        BufferedReader br = new BufferedReader(new FileReader("src/main/resources/Data/metadata.csv"));
         String s = br.readLine();
         while(s != null){
             String[] header = s.split(",");
@@ -213,8 +208,7 @@ public class DBApp {
             checkMinMaxInput(htblColNameValue, (Hashtable<String, String>) parameters[1],
                     (Hashtable<String, String>) parameters[2]);
             Table table;
-            FileInputStream fileIn = new FileInputStream(".\\" + strCurrentDatabaseName +
-                    "\\" + strTableName + ".class");
+            FileInputStream fileIn = new FileInputStream("src/main/resources/Data/" + strTableName + ".class");
             ObjectInputStream in = new ObjectInputStream(fileIn);
             table = (Table) in.readObject();
             fileIn.close();
@@ -245,8 +239,7 @@ public class DBApp {
             checkMinMaxInput(htblColNameValue, (Hashtable<String, String>) parameters[1],
                     (Hashtable<String, String>) parameters[2]);
             Table table;
-            FileInputStream fileIn = new FileInputStream(".\\" + strCurrentDatabaseName +
-                    "\\" + strTableName + ".class");
+            FileInputStream fileIn = new FileInputStream("src/main/resources/Data/" + strTableName + ".class");
             ObjectInputStream in = new ObjectInputStream(fileIn);
             table = (Table) in.readObject();
             fileIn.close();
@@ -265,8 +258,7 @@ public class DBApp {
             checkMinMaxInput(htblColNameValue, (Hashtable<String, String>) parameters[1],
                     (Hashtable<String, String>) parameters[2]);
             Table table;
-            FileInputStream fileIn = new FileInputStream(".\\" + strCurrentDatabaseName +
-                    "\\" + strTableName + ".class");
+            FileInputStream fileIn = new FileInputStream("src/main/resources/Data/" + strTableName + ".class");
             ObjectInputStream in = new ObjectInputStream(fileIn);
             table = (Table) in.readObject();
             fileIn.close();
@@ -360,7 +352,7 @@ public class DBApp {
         app.insertIntoTable("Test1", htblColNameValue);
         htblColNameValue.clear();
 
-        FileInputStream fileIn = new FileInputStream(".\\" + strCurrentDatabaseName + "\\Test1.class");
+        FileInputStream fileIn = new FileInputStream("src/main/resources/Data/Test1.class");
         ObjectInputStream in = new ObjectInputStream(fileIn);
         Table t = (Table) in.readObject();
         fileIn.close();

@@ -31,7 +31,7 @@ public class Page{
         this.records = records;
         FileReader reader = null;
         try {
-            reader = new FileReader(".\\resources\\DBApp.config");
+            reader = new FileReader("src/main/resources/DBApp.config");
             Properties p = new Properties();
             p.load(reader);
 
