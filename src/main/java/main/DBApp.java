@@ -12,8 +12,6 @@ import main.java.miscellaneous.Null;
 
 public class DBApp {
 
-    private static String strCurrentdatabaseName;
-
     public void init() {
         createMetadata();
     }
@@ -37,10 +35,6 @@ public class DBApp {
         } catch (IOException e1) {
             e1.printStackTrace();
         }
-    }
-
-    public static void selectdatabase(String strdatabaseName) {
-        strCurrentdatabaseName = strdatabaseName;
     }
 
     public void createTable(String strTableName, String strClusteringKeyColumn,
@@ -290,10 +284,6 @@ public class DBApp {
     public Iterator selectFromTable(SQLTerm[] arrSQLTerms, String[] strarrOperators) throws DBAppException {
         //TODO LATER
         return null;
-    }
-
-    public static String getStrCurrentdatabaseName() {
-        return strCurrentdatabaseName;
     }
 
 
