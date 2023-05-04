@@ -41,9 +41,8 @@ public class OctTree implements Serializable {
     }
 
     public Iterator selectFromTable(){
-        Vector<Hashtable<String, Object>> resultSet = new Vector<>();
         //TODO Later
-        return resultSet.iterator();
+        return null;
     }
 
     public double enumerateObjects(Object data){
