@@ -16,7 +16,7 @@ public class OctTreeNode implements Serializable {
      * In case the node is full, and we need to insert a new values.
      * We split the node into 8 nodes that are not full and redistribute the entries accordingly.*/
     public void split(){
-
+        //TODO Later
     }
 
     public boolean isFull() {
