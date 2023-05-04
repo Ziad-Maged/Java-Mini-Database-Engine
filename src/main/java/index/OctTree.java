@@ -32,8 +32,8 @@ public class OctTree implements Serializable {
         return strIndexName;
     }
 
-    public void insert(){
-
+    public void insert(String strClusteringKey, Hashtable<String, Object> htblColNameValues){
+        //TODO Later
     }
 
     public void delete(){
