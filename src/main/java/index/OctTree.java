@@ -42,7 +42,7 @@ public class OctTree implements Serializable {
 
     public Iterator selectFromTable(){
         Vector<Hashtable<String, Object>> resultSet = new Vector<>();
-        //TODO later
+        //TODO Later
         return resultSet.iterator();
     }
 
