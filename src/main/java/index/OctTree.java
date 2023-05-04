@@ -41,7 +41,7 @@ public class OctTree implements Serializable {
     }
 
     public Iterator selectFromTable(){
-        //TODO later
+        //TODO Later
         return null;
     }
 
