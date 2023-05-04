@@ -9,8 +9,9 @@ public class Table implements Serializable{
     private final Vector<PageDetails> details;
     private int numberOfRecords;
     private int numberOfPages;
-
     private transient boolean inserting;
+    private boolean indexed;
+    private Vector<String> vecIndexList;
 
     public Table(String tableName) {
         this.tableName = tableName;
@@ -42,6 +43,18 @@ public class Table implements Serializable{
     public void addNewPage(Page page){
         details.add(new PageDetails(page.getName(), numberOfPages, page.getRecords().get(0), page.getRecords().get(0)));
         page.savePage();
+    }
+
+    public boolean isIndexed() {
+        return indexed;
+    }
+
+    public void setIndexed(boolean indexed) {
+        this.indexed = indexed;
+    }
+
+    public Vector<String> getVecIndexList() {
+        return vecIndexList;
     }
 
     public void saveTable(){
