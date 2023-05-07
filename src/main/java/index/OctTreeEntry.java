@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 public class OctTreeEntry implements Serializable {
     private String page;
-    private final Point3D location;
-    private final Object objClusteringKeyValue;
+    private Point3D location;
+    private Object objClusteringKeyValue;
 
     public OctTreeEntry(String page, Object objClusteringKeyValue, Point3D location){
         this.page = page;
