@@ -7,8 +7,8 @@ import java.util.*;
 public class OctTree implements Serializable {
     private String strIndexName;
     private OctTreeNode root;
-
     private double minX, maxX, minY, maxY, minZ, maxZ;
+    private static int maxEntriesInOctTreeNode;
 
     public OctTree(String strIndexName, Hashtable<String, Double>htblColNameRanges){
         this.strIndexName = strIndexName;
@@ -16,10 +16,11 @@ public class OctTree implements Serializable {
             FileReader reader = new FileReader("src/main/resources/DBApp.config");
             Properties p = new Properties();
             p.load(reader);
-            root = new OctTreeNode(Integer.parseInt(p.getProperty("MaximumEntriesinOctreeNode")));
+            maxEntriesInOctTreeNode = Integer.parseInt(p.getProperty("MaximumEntriesinOctreeNode"));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        root = new OctTreeNode(maxEntriesInOctTreeNode);
         minX = htblColNameRanges.get("MinX");
         maxX = htblColNameRanges.get("MaxX");
         minY = htblColNameRanges.get("MinY");

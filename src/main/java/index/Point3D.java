@@ -26,4 +26,8 @@ public class Point3D implements Serializable {
     public double getZ() {
         return z;
     }
+
+    public String toString(){
+        return "(" + x + ", " + y + ", " + z +")";
+    }
 }

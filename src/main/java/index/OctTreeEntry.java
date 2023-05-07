@@ -28,4 +28,9 @@ public class OctTreeEntry implements Serializable {
     public void setPage(String page) {
         this.page = page;
     }
+
+    public String toString(){
+        return "{ Location=" + location + ", Reference=" + page +
+                ", ClusteringKeyValue=" + objClusteringKeyValue + " }";
+    }
 }

@@ -38,4 +38,10 @@ public class OctTreeNode implements Serializable {
     public void setSize(int size) {
         this.size = size;
     }
+
+    public OctTreeEntry get(int index){
+        if(index >= entries.length || index < 0)
+            return null;
+        return entries[index];
+    }
 }
