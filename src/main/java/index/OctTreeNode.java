@@ -45,7 +45,8 @@ public class OctTreeNode implements Serializable {
         return entries[index];
     }
 
-    public void insert(Point3D location, Object objClusteringKeyValue){
-        //TODO
+    public void insert(String pageName, Point3D location, Object objClusteringKeyValue){
+        if(!full)
+            entries[size++] = new OctTreeEntry(pageName, objClusteringKeyValue, location);
     }
 }

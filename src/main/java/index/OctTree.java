@@ -45,12 +45,12 @@ public class OctTree implements Serializable {
         return maxEntriesInOctTreeNode;
     }
 
-    public void insert(String strClusteringKey, Hashtable<String, Object> htblColNameValues){
+    public void insert(String strClusteringKey, String pageName, Hashtable<String, Object> htblColNameValues){
         String[] info = strIndexName.split("_");
         double x = enumerateObjects(htblColNameValues.get(info[1]));
         double y = enumerateObjects(htblColNameValues.get(info[2]));
         double z = enumerateObjects(htblColNameValues.get(info[3]));
-        root.insert(new Point3D(x, y, z), htblColNameValues.get(strClusteringKey));
+        root.insert(pageName, new Point3D(x, y, z), htblColNameValues.get(strClusteringKey));
     }
 
     public void delete(){
