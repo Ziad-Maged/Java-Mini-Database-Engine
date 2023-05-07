@@ -3,10 +3,10 @@ package main.java.index;
 import java.io.Serializable;
 
 public class OctTreeNode implements Serializable {
-    private final OctTreeEntry[] entries;
+    private OctTreeEntry[] entries;
     private OctTreeNode[] children;
     private boolean full;
-    private Point3D centerPoint;
+    private Point3D centerPoint, minimum, maximum;
     private int size;
     public OctTreeNode(){
         entries = new OctTreeEntry[OctTree.getMaxEntriesInOctTreeNode()];
@@ -17,6 +17,7 @@ public class OctTreeNode implements Serializable {
      * We split the node into 8 nodes that are not full and redistribute the entries accordingly.*/
     public void split(){
         //TODO Later
+        entries = null;
     }
 
     public boolean isFull() {
@@ -29,6 +30,22 @@ public class OctTreeNode implements Serializable {
 
     public Point3D getCenterPoint() {
         return centerPoint;
+    }
+
+    public Point3D getMaximum() {
+        return maximum;
+    }
+
+    public Point3D getMinimum(){
+        return minimum;
+    }
+
+    public void setMinimum(Point3D minimum) {
+        this.minimum = minimum;
+    }
+
+    public void setMaximum(Point3D maximum) {
+        this.maximum = maximum;
     }
 
     public int getSize() {

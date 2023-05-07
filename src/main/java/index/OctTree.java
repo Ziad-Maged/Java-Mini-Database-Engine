@@ -27,6 +27,8 @@ public class OctTree implements Serializable {
                 htblColNameRanges.get("MinZ"));
         maxPoint = new Point3D(htblColNameRanges.get("MaxX"), htblColNameRanges.get("MaxY"),
                 htblColNameRanges.get("MaxZ"));
+        root.setMinimum(minPoint);
+        root.setMaximum(maxPoint);
     }
 
     public String getStrIndexName() {
