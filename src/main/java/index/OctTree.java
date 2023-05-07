@@ -64,7 +64,7 @@ public class OctTree implements Serializable {
         return null;
     }
 
-    public double enumerateObjects(Object data){
+    public static double enumerateObjects(Object data){
         double result = 0.0;
         if(data instanceof Integer)
             result = ((Integer)data).doubleValue();
