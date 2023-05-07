@@ -1,6 +1,8 @@
 package main.java.index;
 
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.*;
 
@@ -60,6 +62,18 @@ public class OctTree implements Serializable {
             result += temp.getDate() + (temp.getMonth() + 1) * 2 + (temp.getYear() + 1900);
         }
         return result;
+    }
+
+    public void saveIndex(){
+        try{
+            FileOutputStream fileOut = new FileOutputStream("src/main/resources/data/" + strIndexName + ".class");
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(this);
+            fileOut.close();
+            out.close();
+        }catch(Exception ignored){
+            //Ignore
+        }
     }
 
 }
