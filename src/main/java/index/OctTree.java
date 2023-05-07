@@ -7,9 +7,9 @@ import java.io.Serializable;
 import java.util.*;
 
 public class OctTree implements Serializable {
-    private String strIndexName;
+    private final String strIndexName;
     private OctTreeNode root;
-    private double minX, maxX, minY, maxY, minZ, maxZ;
+    private Point3D minPoint, maxPoint;
     private static int maxEntriesInOctTreeNode;
 
     public OctTree(String strIndexName, Hashtable<String, Double>htblColNameRanges){
@@ -22,21 +22,35 @@ public class OctTree implements Serializable {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        root = new OctTreeNode(maxEntriesInOctTreeNode);
-        minX = htblColNameRanges.get("MinX");
-        maxX = htblColNameRanges.get("MaxX");
-        minY = htblColNameRanges.get("MinY");
-        maxY = htblColNameRanges.get("MaxY");
-        minZ = htblColNameRanges.get("MinZ");
-        maxZ = htblColNameRanges.get("MaxZ");
+        root = new OctTreeNode();
+        minPoint = new Point3D(htblColNameRanges.get("MinX"), htblColNameRanges.get("MinY"),
+                htblColNameRanges.get("MinZ"));
+        maxPoint = new Point3D(htblColNameRanges.get("MaxX"), htblColNameRanges.get("MaxY"),
+                htblColNameRanges.get("MaxZ"));
     }
 
     public String getStrIndexName() {
         return strIndexName;
     }
 
+    public Point3D getMinPoint() {
+        return minPoint;
+    }
+
+    public Point3D getMaxPoint() {
+        return maxPoint;
+    }
+
+    public static int getMaxEntriesInOctTreeNode(){
+        return maxEntriesInOctTreeNode;
+    }
+
     public void insert(String strClusteringKey, Hashtable<String, Object> htblColNameValues){
-        //TODO Later
+        String[] info = strIndexName.split("_");
+        double x = enumerateObjects(htblColNameValues.get(info[1]));
+        double y = enumerateObjects(htblColNameValues.get(info[2]));
+        double z = enumerateObjects(htblColNameValues.get(info[3]));
+        root.insert(new Point3D(x, y, z), htblColNameValues.get(strClusteringKey));
     }
 
     public void delete(){

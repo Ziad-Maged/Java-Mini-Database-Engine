@@ -8,8 +8,8 @@ public class OctTreeNode implements Serializable {
     private boolean full;
     private Point3D centerPoint;
     private int size;
-    public OctTreeNode(int size){
-        entries = new OctTreeEntry[size];
+    public OctTreeNode(){
+        entries = new OctTreeEntry[OctTree.getMaxEntriesInOctTreeNode()];
     }
 
     /**
@@ -43,5 +43,9 @@ public class OctTreeNode implements Serializable {
         if(index >= entries.length || index < 0)
             return null;
         return entries[index];
+    }
+
+    public void insert(Point3D location, Object objClusteringKeyValue){
+        //TODO
     }
 }
