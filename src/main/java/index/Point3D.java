@@ -11,10 +11,6 @@ public class Point3D implements Serializable {
         this.z = z;
     }
 
-    public Point3D(){
-        this(0, 0, 0);
-    }
-
     public double getX() {
         return x;
     }
