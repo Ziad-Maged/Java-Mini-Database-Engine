@@ -141,6 +141,7 @@ public class OctTreeNode implements Serializable {
     }
 
     public void insert(String pageName, Point3D location, Hashtable<String, Object> htblColNameValue){
+        //TODO Check if duplicate and add as overflow.
         if(!full){
             entries[size++] = new OctTreeEntry(pageName, htblColNameValue, location);
             if(size >= entries.length)
