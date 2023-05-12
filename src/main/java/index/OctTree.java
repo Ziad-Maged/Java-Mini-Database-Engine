@@ -8,8 +8,8 @@ import java.util.*;
 
 public class OctTree implements Serializable {
     private final String strIndexName;
-    private OctTreeNode root;
-    private Point3D minPoint, maxPoint;
+    private final OctTreeNode root;
+    private final Point3D minPoint, maxPoint;
     private static int maxEntriesInOctTreeNode;
 
     public OctTree(String strIndexName, Hashtable<String, Double>htblColNameRanges){
