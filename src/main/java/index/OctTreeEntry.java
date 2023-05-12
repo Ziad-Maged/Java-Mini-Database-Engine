@@ -36,10 +36,6 @@ public class OctTreeEntry implements Serializable {
         return overflown;
     }
 
-    public void setOverflown(boolean overflown) {
-        this.overflown = overflown;
-    }
-
     public void insertOverflow(String pageName, Point3D location, Hashtable<String, Object> htblColNameValue){
         if(this.nextOverflow == null){
             nextOverflow = new OctTreeEntry(pageName, htblColNameValue, location);
