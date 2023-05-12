@@ -8,7 +8,4 @@ public record Point3D(double x, double y, double z) implements Serializable {
         return "(" + x + ", " + y + ", " + z + ")";
     }
 
-    public boolean equals(Point3D point) {
-        return x == point.x() && y == point.y() && z == point.z();
-    }
 }
