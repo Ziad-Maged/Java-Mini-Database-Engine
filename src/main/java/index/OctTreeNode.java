@@ -16,7 +16,37 @@ public class OctTreeNode implements Serializable {
      * In case the node is full, and we need to insert a new values.
      * We split the node into 8 nodes that are not full and redistribute the entries accordingly.*/
     public void split(){
-        //TODO Later
+        children = new OctTreeNode[8];
+        for(int i = 0; i < children.length; i++)
+            children[i] = new OctTreeNode();
+        centerPoint = new Point3D((minimum.x() + maximum.x()) / 2,
+                minimum.y() + maximum.y() / 2,
+                minimum.z() + maximum.z() / 2);
+
+        //First Octant
+        children[0].setMinimum(centerPoint);
+        children[0].setMaximum(maximum);
+        //Second Octant
+        children[1].setMinimum(new Point3D(minimum.x(), centerPoint.y(), centerPoint.z()));
+        children[1].setMaximum(new Point3D(centerPoint.x(), maximum.y(), maximum.z()));
+        //Third Octant
+        children[2].setMinimum(new Point3D(minimum.x(), minimum.y(), centerPoint.z()));
+        children[2].setMaximum(new Point3D(centerPoint.x(), centerPoint.y(), maximum.z()));
+        //Fourth Octant
+        children[3].setMinimum(new Point3D(centerPoint.x(), minimum.y(), centerPoint.z()));
+        children[3].setMaximum(new Point3D(maximum.x(), centerPoint.y(), maximum.z()));
+        //Fifth Octant
+        children[4].setMinimum(new Point3D(centerPoint.x(), centerPoint.y(), minimum.z()));
+        children[4].setMaximum(new Point3D(maximum.x(), maximum.y(), centerPoint.z()));
+        //Sixth Octant
+        children[5].setMinimum(new Point3D(minimum.x(), centerPoint.y(), minimum.z()));
+        children[5].setMaximum(new Point3D(centerPoint.x(), maximum.y(), centerPoint.z()));
+        //Seventh Octant
+        children[6].setMinimum(minimum);
+        children[6].setMaximum(centerPoint);
+        //Eighth Octant
+        children[7].setMinimum(new Point3D(centerPoint.x(), minimum.y(), minimum.z()));
+        children[7].setMaximum(new Point3D(maximum.x(), centerPoint.y(), centerPoint.z()));
         entries = null;
     }
 
@@ -69,7 +99,7 @@ public class OctTreeNode implements Serializable {
                 full = true;
         }
         else{
-            //TODO
+            this.split();
             size++;
         }
     }
