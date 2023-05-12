@@ -52,7 +52,12 @@ public class OctTree implements Serializable {
         double x = enumerateObjects(htblColNameValues.get(info[1]));
         double y = enumerateObjects(htblColNameValues.get(info[2]));
         double z = enumerateObjects(htblColNameValues.get(info[3]));
-        root.insert(pageName, new Point3D(x, y, z), htblColNameValues.get(strClusteringKey));
+        Hashtable<String, Object> recordInfo = new Hashtable<>();
+        recordInfo.put(info[1], htblColNameValues.get(info[1]));
+        recordInfo.put(info[2], htblColNameValues.get(info[2]));
+        recordInfo.put(info[3], htblColNameValues.get(info[3]));
+        recordInfo.put(strClusteringKey, htblColNameValues.get(strClusteringKey));
+        root.insert(pageName, new Point3D(x, y, z), recordInfo);
     }
 
     public void delete(){

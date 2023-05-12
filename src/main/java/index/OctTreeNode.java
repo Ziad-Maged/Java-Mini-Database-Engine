@@ -1,6 +1,7 @@
 package main.java.index;
 
 import java.io.Serializable;
+import java.util.Hashtable;
 
 public class OctTreeNode implements Serializable {
     private OctTreeEntry[] entries;
@@ -47,7 +48,54 @@ public class OctTreeNode implements Serializable {
         //Eighth Octant
         children[7].setMinimum(new Point3D(centerPoint.x(), minimum.y(), minimum.z()));
         children[7].setMaximum(new Point3D(maximum.x(), centerPoint.y(), centerPoint.z()));
+        for(OctTreeEntry e : entries)
+            distribute(e);
         entries = null;
+    }
+
+    public void distribute(OctTreeEntry entry){
+        Point3D location = entry.getLocation();
+        if(location.x() >= centerPoint.x()
+                && location.y() >= centerPoint.y()
+                && location.z() >= centerPoint.z()){
+            //First Octant
+            children[0].insert(entry.getPage(), entry.getLocation(), entry.getHtblColNameValue());
+        }else if(location.x() < centerPoint.x()
+                && location.y() > centerPoint.y()
+                && location.z() > centerPoint.z()){
+            //Second Octant
+            children[1].insert(entry.getPage(), entry.getLocation(), entry.getHtblColNameValue());
+        }else if(location.x() < centerPoint.x()
+                && location.y() < centerPoint.y()
+                && location.z() > centerPoint.z()){
+            //Third Octant
+            children[2].insert(entry.getPage(), entry.getLocation(), entry.getHtblColNameValue());
+        }else if(location.x() > centerPoint.x()
+                && location.y() < centerPoint.y()
+                && location.z() > centerPoint.z()){
+            //Fourth Octant
+            children[3].insert(entry.getPage(), entry.getLocation(), entry.getHtblColNameValue());
+        }else if(location.x() > centerPoint.x()
+                && location.y() > centerPoint.y()
+                && location.z() < centerPoint.z()){
+            //Fifth Octant
+            children[4].insert(entry.getPage(), entry.getLocation(), entry.getHtblColNameValue());
+        }else if(location.x() < centerPoint.x()
+                && location.y() > centerPoint.y()
+                && location.z() < centerPoint.z()){
+            //Sixth Octant
+            children[5].insert(entry.getPage(), entry.getLocation(), entry.getHtblColNameValue());
+        }else if(location.x() < centerPoint.x()
+                && location.y() < centerPoint.y()
+                && location.z() < centerPoint.z()){
+            //Seventh Octant
+            children[6].insert(entry.getPage(), entry.getLocation(), entry.getHtblColNameValue());
+        }else if(location.x() > centerPoint.x()
+                && location.y() < centerPoint.y()
+                && location.z() < centerPoint.z()){
+            //Eighth Octant
+            children[7].insert(entry.getPage(), entry.getLocation(), entry.getHtblColNameValue());
+        }
     }
 
     public boolean isFull() {
@@ -92,15 +140,16 @@ public class OctTreeNode implements Serializable {
         return entries[index];
     }
 
-    public void insert(String pageName, Point3D location, Object objClusteringKeyValue){
+    public void insert(String pageName, Point3D location, Hashtable<String, Object> htblColNameValue){
         if(!full){
-            entries[size++] = new OctTreeEntry(pageName, objClusteringKeyValue, location);
+            entries[size++] = new OctTreeEntry(pageName, htblColNameValue, location);
             if(size >= entries.length)
                 full = true;
         }
         else{
             this.split();
-            size++;
+            OctTreeEntry entry = new OctTreeEntry(pageName, htblColNameValue, location);
+            distribute(entry);
         }
     }
 }

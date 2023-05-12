@@ -1,15 +1,16 @@
 package main.java.index;
 
 import java.io.Serializable;
+import java.util.Hashtable;
 
 public class OctTreeEntry implements Serializable {
     private String page;
     private final Point3D location;
-    private final Object objClusteringKeyValue;
+    private final Hashtable<String, Object> htblColNameValue;
 
-    public OctTreeEntry(String page, Object objClusteringKeyValue, Point3D location){
+    public OctTreeEntry(String page, Hashtable<String, Object> htblColNameValue, Point3D location){
         this.page = page;
-        this.objClusteringKeyValue = objClusteringKeyValue;
+        this.htblColNameValue = htblColNameValue;
         this.location = location;
     }
 
@@ -17,8 +18,8 @@ public class OctTreeEntry implements Serializable {
         return page;
     }
 
-    public Object getObjClusteringKeyValue() {
-        return objClusteringKeyValue;
+    public Hashtable<String, Object> getHtblColNameValue() {
+        return htblColNameValue;
     }
 
     public Point3D getLocation() {
@@ -31,6 +32,6 @@ public class OctTreeEntry implements Serializable {
 
     public String toString(){
         return "{ Location=" + location + ", Reference=" + page +
-                ", ClusteringKeyValue=" + objClusteringKeyValue + " }";
+                ", htblColNameValue=" + htblColNameValue + " }";
     }
 }
