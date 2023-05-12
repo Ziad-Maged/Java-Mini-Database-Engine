@@ -20,8 +20,8 @@ public class OctTreeNode implements Serializable {
         for(int i = 0; i < children.length; i++)
             children[i] = new OctTreeNode();
         centerPoint = new Point3D((minimum.x() + maximum.x()) / 2,
-                minimum.y() + maximum.y() / 2,
-                minimum.z() + maximum.z() / 2);
+                (minimum.y() + maximum.y()) / 2,
+                (minimum.z() + maximum.z()) / 2);
 
         //First Octant
         children[0].setMinimum(centerPoint);
