@@ -69,7 +69,7 @@ public class OctTree implements Serializable {
     }
 
     public void delete(){
-
+        //TODO Later
     }
 
     public Iterator selectFromTable(){
