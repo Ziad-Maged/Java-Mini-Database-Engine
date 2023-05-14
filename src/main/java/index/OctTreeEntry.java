@@ -45,6 +45,15 @@ public class OctTreeEntry implements Serializable {
         nextOverflow.insertOverflow(pageName, location, htblColNameValue);
     }
 
+    public void shiftByOnePage(String strClusteringKey, Hashtable<String, Object> htblColNameValues){
+        if(htblColNameValues.get(strClusteringKey).equals(htblColNameValue.get(strClusteringKey))){
+            String[] pageName = page.split("_");
+            page = pageName[0] + (Integer.parseInt(pageName[1]) + 1);
+            return;
+        }
+        nextOverflow.shiftByOnePage(strClusteringKey, htblColNameValues);
+    }
+
     public String toString(){
         return "{ Location=" + location + ", Reference=" + page +
                 ", htblColNameValue=" + htblColNameValue + " }";

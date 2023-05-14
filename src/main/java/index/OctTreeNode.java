@@ -159,4 +159,62 @@ public class OctTreeNode implements Serializable {
             distribute(entry);
         }
     }
+
+    public void shiftByOnePage(String strClusteringKey, Point3D location,
+                               Hashtable<String, Object> htblColNameValues){
+        if(entries != null){
+            for(OctTreeEntry entry : entries){
+                if(entry.getLocation().equals(location) && entry.getHtblColNameValue().get(strClusteringKey).equals(htblColNameValues.get(strClusteringKey))){
+                    String[] pageName = entry.getPage().split("_");
+                    entry.setPage(pageName[0] + (Integer.parseInt(pageName[1]) + 1));
+                    return;
+                }else if(entry.getLocation().equals(location) && entry.isOverflown()){
+                    entry.shiftByOnePage(strClusteringKey, htblColNameValues);
+                    return;
+                }
+            }
+        }else {
+            if(location.x() >= centerPoint.x()
+                    && location.y() >= centerPoint.y()
+                    && location.z() >= centerPoint.z()){
+                //First Octant
+                children[0].shiftByOnePage(strClusteringKey, location, htblColNameValues);
+            }else if(location.x() < centerPoint.x()
+                    && location.y() > centerPoint.y()
+                    && location.z() > centerPoint.z()){
+                //Second Octant
+                children[1].shiftByOnePage(strClusteringKey, location, htblColNameValues);
+            }else if(location.x() < centerPoint.x()
+                    && location.y() < centerPoint.y()
+                    && location.z() > centerPoint.z()){
+                //Third Octant
+                children[2].shiftByOnePage(strClusteringKey, location, htblColNameValues);
+            }else if(location.x() > centerPoint.x()
+                    && location.y() < centerPoint.y()
+                    && location.z() > centerPoint.z()){
+                //Fourth Octant
+                children[3].shiftByOnePage(strClusteringKey, location, htblColNameValues);
+            }else if(location.x() > centerPoint.x()
+                    && location.y() > centerPoint.y()
+                    && location.z() < centerPoint.z()){
+                //Fifth Octant
+                children[4].shiftByOnePage(strClusteringKey, location, htblColNameValues);
+            }else if(location.x() < centerPoint.x()
+                    && location.y() > centerPoint.y()
+                    && location.z() < centerPoint.z()){
+                //Sixth Octant
+                children[5].shiftByOnePage(strClusteringKey, location, htblColNameValues);
+            }else if(location.x() < centerPoint.x()
+                    && location.y() < centerPoint.y()
+                    && location.z() < centerPoint.z()){
+                //Seventh Octant
+                children[6].shiftByOnePage(strClusteringKey, location, htblColNameValues);
+            }else if(location.x() > centerPoint.x()
+                    && location.y() < centerPoint.y()
+                    && location.z() < centerPoint.z()){
+                //Eighth Octant
+                children[7].shiftByOnePage(strClusteringKey, location, htblColNameValues);
+            }
+        }
+    }
 }

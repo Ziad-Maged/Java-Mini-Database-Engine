@@ -60,6 +60,14 @@ public class OctTree implements Serializable {
         root.insert(pageName, new Point3D(x, y, z), recordInfo);
     }
 
+    public void shiftByOnePage(String strClusteringKey, Hashtable<String, Object> htblColNameValues){
+        String[] info = strIndexName.split("_");
+        double x = enumerateObjects(htblColNameValues.get(info[1]));
+        double y = enumerateObjects(htblColNameValues.get(info[2]));
+        double z = enumerateObjects(htblColNameValues.get(info[3]));
+        root.shiftByOnePage(strClusteringKey, new Point3D(x, y, z), htblColNameValues);
+    }
+
     public void delete(){
 
     }
