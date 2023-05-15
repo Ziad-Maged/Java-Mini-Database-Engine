@@ -263,17 +263,7 @@ public class DBApp {
             if(htblColNameValue.isEmpty())
                 table.truncateTable();
             else {
-                boolean exists = false;
-                for(String e : htblColNameValue.keySet()){
-                    if(e.equals(parameters[0].toString())){
-                        exists = true;
-                        break;
-                    }
-                }
-                if(exists)
-                    table.delete(parameters[0].toString(), htblColNameValue);
-                else
-                    table.delete(null, htblColNameValue);
+                table.delete(parameters[0].toString(), htblColNameValue);
             }
             table.saveTable();
         }catch (IOException | ClassNotFoundException e){

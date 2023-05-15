@@ -8,7 +8,7 @@ import java.util.*;
 
 public class OctTree implements Serializable {
     private final String strIndexName;
-    private final OctTreeNode root;
+    private OctTreeNode root;
     private final Point3D minPoint, maxPoint;
     private static int maxEntriesInOctTreeNode;
 
@@ -45,6 +45,10 @@ public class OctTree implements Serializable {
 
     public static int getMaxEntriesInOctTreeNode(){
         return maxEntriesInOctTreeNode;
+    }
+
+    public void truncateIndex(){
+        root = new OctTreeNode();
     }
 
     public void insert(String strClusteringKey, String pageName, Hashtable<String, Object> htblColNameValues){

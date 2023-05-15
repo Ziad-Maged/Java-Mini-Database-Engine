@@ -74,6 +74,9 @@ public class Table implements Serializable{
      * This method is made to clear the whole table in case the input to the delete method has an
      * <b><i>empty hashtable</i></b>.*/
     public void truncateTable(){
+        Vector<OctTree> indices = loadIndices(); // loading all the indices on the table
+        for(OctTree e : indices) // looping over all the indices
+            e.truncateIndex(); // resetting all the indices of the table
         for(PageDetails e : details){ // looping over all pages if the hashtable is empty
             File page = new File("src/main/resources/data/" + e.getPageName() + ".class"); // creating a file variable for every page in the table
             page.delete(); // deleting every page in the table
@@ -266,6 +269,9 @@ public class Table implements Serializable{
             for(OctTree index : indices) // looping over all the indices on the table to insert the record
                 index.shiftByOnePage(strClusteringKey, temp);// shifting the temp variable's page reference in the index to the next page after leaving the loop since the element that will be added to a new page on its own will not be shifted in the loop
         }
+        for(OctTree e : indices) // looping over all the indices
+            e.saveIndex(); // saving the changes made to each index
+        indices = null; // nulling out the indices vector
         p = null; // nulling out the page variable
         System.gc(); // restarting the garbage collector
         numberOfRecords++; // incrementing the number of records in the table after each successful insertion
@@ -279,8 +285,9 @@ public class Table implements Serializable{
     }
 
     public void delete(String strClusteringKey, Hashtable<String,Object> htblColNameValue) throws InvalidInputException {
+        Vector<OctTree> indices = loadIndices(); // loading all the indices on the table to delete the records with the values in question
         Page p; // creating a page variable
-        if(strClusteringKey != null){ // having the clustering key means that we will delete only one record. So binary search.
+        if(htblColNameValue.containsKey(strClusteringKey)){ // having the clustering key means that we will delete only one record. So binary search.
             for(PageDetails e : details){ // looping over all the page details
                 int compareMin = compareWith(htblColNameValue.get(strClusteringKey),
                         e.getMinimumRecord().get(strClusteringKey)); // comparing the input with the minimum record in the page
@@ -290,6 +297,8 @@ public class Table implements Serializable{
                     p = loadPage("src/main/resources/data/" + e.getPageName() + ".class"); //load the current page
                     assert p != null; // IntelliJ's precautionary measures against NullPointerException
                     p.setName(e.getPageName()); // setting the name of the page
+                    for(OctTree i : indices) // looping over all the indices on the table
+                        i.delete(strClusteringKey, p.getRecords().get(0)); // deleting the record that satisfies the input values
                     p.getRecords().remove(0); // removing the minimum record
                     numberOfRecords--; // decrementing the number of records by one
                     if(p.isEmpty()){ // checking if the page is empty after deletion
@@ -305,6 +314,8 @@ public class Table implements Serializable{
                     p = loadPage("src/main/resources/data/" + e.getPageName() + ".class"); //load the current page
                     assert p != null; // IntelliJ's precautionary measures against NullPointerException
                     p.setName(e.getPageName()); // setting the name of the page
+                    for(OctTree i : indices) // looping over all the indices on the table
+                        i.delete(strClusteringKey, p.getRecords().get(p.getRecords().size() - 1)); // deleting the record that satisfies the input values
                     p.getRecords().remove(p.getRecords().size() - 1); // removing the maximum record
                     numberOfRecords--; // decrementing the number of records by one
                     if(p.isEmpty()){ // checking if the page is empty after deletion
@@ -323,6 +334,8 @@ public class Table implements Serializable{
                     int indexOfDeletion = binarySearch(strClusteringKey, htblColNameValue, p.getRecords()); // finding the index of deletion using binary search
                     if(!htblColNameValue.get(strClusteringKey).equals(p.getRecords().get(indexOfDeletion).get(strClusteringKey))) // checking if the acquired record does indeed exist with the same value for the clustering key
                         throw new InvalidInputException("The input value for the clustering key does not exist"); // if not then we throw an exception and halt the whole program
+                    for(OctTree i : indices) // looping over all the indices on the table
+                        i.delete(strClusteringKey, p.getRecords().get(indexOfDeletion)); // deleting the record that satisfies the input values
                     p.getRecords().remove(indexOfDeletion); // otherwise we simply remove the record
                     numberOfRecords--; // we decrement the number of records in the table
                     e.setFull(false); // if the page was already full before deletion then it is not full after deletion
@@ -341,6 +354,8 @@ public class Table implements Serializable{
                 p.setName(e.getPageName()); // setting the name of the page
                 for(int i = 0; i < p.getRecords().size(); i++){ // looping over all the records in the page
                     if(toBeDeleted(p.getRecords().get(i), htblColNameValue)){ // checking if the current record is one of the records in question
+                        for(OctTree s : indices) // looping over all the indices on the table
+                            s.delete(strClusteringKey, p.getRecords().get(i)); // deleting the record that satisfies the input values
                         p.getRecords().remove(i--); // removing the records and decrementing the counter by one to accommodate the condition that two records that should be deleted are consecutive
                         numberOfRecords--; // decrementing the number of records in the table each time a record is deleted happens
                         e.setFull(false); // making sure that the page is empty after every delete.
@@ -357,6 +372,8 @@ public class Table implements Serializable{
                 details.remove(e); // removing the page from the details vector of the table
             }
         }
+        for(OctTree e : indices) // looping over all the indices
+            e.saveIndex(); // saving the changes made to each index
     }
 
     public void update(String strClusteringKey, Object objClusteringKeyValue,
@@ -415,6 +432,9 @@ public class Table implements Serializable{
                 }
             }
         }
+        for(OctTree e : indices) // looping over all the indices
+            e.saveIndex(); // saving the changes made to each index
+        indices = null; // nulling out the indices vector
         p = null; // nulling out the page variable
         System.gc(); // starting the garbage collector
     }
