@@ -274,7 +274,6 @@ public class DBApp {
     public Iterator selectFromTable(SQLTerm[] arrSQLTerms, String[] strarrOperators) throws DBAppException {
         if(strarrOperators.length != arrSQLTerms.length - 1)
             throw new InvalidInputException("Size of Operators must be one less than the number of queried columns");
-
         return null;
     }
 
