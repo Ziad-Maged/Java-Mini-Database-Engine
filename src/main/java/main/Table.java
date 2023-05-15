@@ -415,8 +415,8 @@ public class Table implements Serializable{
                 }
             }
         }
-        p = null;
-        System.gc();
+        p = null; // nulling out the page variable
+        System.gc(); // starting the garbage collector
     }
 
     public String toString(){
