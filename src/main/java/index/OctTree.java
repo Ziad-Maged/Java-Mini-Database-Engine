@@ -68,8 +68,12 @@ public class OctTree implements Serializable {
         root.shiftByOnePage(strClusteringKey, new Point3D(x, y, z), htblColNameValues);
     }
 
-    public void delete(){
-        //TODO Later
+    public void delete(String strClusteringKey, Hashtable<String, Object> htblColNameValues){
+        String[] info = strIndexName.split("_");
+        double x = enumerateObjects(htblColNameValues.get(info[1]));
+        double y = enumerateObjects(htblColNameValues.get(info[2]));
+        double z = enumerateObjects(htblColNameValues.get(info[3]));
+        root.delete(strClusteringKey, new Point3D(x, y ,z), htblColNameValues);
     }
 
     public Iterator selectFromTable(){

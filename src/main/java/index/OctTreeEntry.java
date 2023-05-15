@@ -36,6 +36,10 @@ public class OctTreeEntry implements Serializable {
         return overflown;
     }
 
+    public void setOverflown(boolean overflown) {
+        this.overflown = overflown;
+    }
+
     public void insertOverflow(String pageName, Point3D location, Hashtable<String, Object> htblColNameValue){
         if(this.nextOverflow == null){
             nextOverflow = new OctTreeEntry(pageName, htblColNameValue, location);
@@ -52,6 +56,14 @@ public class OctTreeEntry implements Serializable {
             return;
         }
         nextOverflow.shiftByOnePage(strClusteringKey, htblColNameValues);
+    }
+
+    public void delete(String strClusteringKey, Hashtable<String, Object> htblColNameValues){
+        if(nextOverflow.getHtblColNameValue().get(strClusteringKey).equals(htblColNameValues.get(strClusteringKey))){
+            nextOverflow = nextOverflow.nextOverflow;
+            return;
+        }
+        nextOverflow.delete(strClusteringKey, htblColNameValues);
     }
 
     public String toString(){

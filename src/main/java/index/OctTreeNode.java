@@ -1,5 +1,7 @@
 package main.java.index;
 
+import main.java.main.DBApp;
+
 import java.io.Serializable;
 import java.util.Hashtable;
 
@@ -51,6 +53,29 @@ public class OctTreeNode implements Serializable {
         for(OctTreeEntry e : entries)
             distribute(e);
         entries = null;
+    }
+
+    public void revert(){
+        int i = 0;
+        entries = new OctTreeEntry[OctTree.getMaxEntriesInOctTreeNode()];
+        for(OctTreeEntry e : children[0].getEntries())
+            entries[i++] = e;
+        for(OctTreeEntry e : children[1].getEntries())
+            entries[i++] = e;
+        for(OctTreeEntry e : children[2].getEntries())
+            entries[i++] = e;
+        for(OctTreeEntry e : children[3].getEntries())
+            entries[i++] = e;
+        for(OctTreeEntry e : children[4].getEntries())
+            entries[i++] = e;
+        for(OctTreeEntry e : children[5].getEntries())
+            entries[i++] = e;
+        for(OctTreeEntry e : children[6].getEntries())
+            entries[i++] = e;
+        for(OctTreeEntry e : children[7].getEntries())
+            entries[i++] = e;
+        children = null;
+        centerPoint = null;
     }
 
     public void distribute(OctTreeEntry entry){
@@ -140,6 +165,10 @@ public class OctTreeNode implements Serializable {
         return entries[index];
     }
 
+    public OctTreeEntry[] getEntries(){
+        return entries;
+    }
+
     public void insert(String pageName, Point3D location, Hashtable<String, Object> htblColNameValue){
         //TODO Check if duplicate and add as overflow.
         if(!full){
@@ -157,6 +186,7 @@ public class OctTreeNode implements Serializable {
             this.split();
             OctTreeEntry entry = new OctTreeEntry(pageName, htblColNameValue, location);
             distribute(entry);
+            size++;
         }
     }
 
@@ -215,6 +245,79 @@ public class OctTreeNode implements Serializable {
                 //Eighth Octant
                 children[7].shiftByOnePage(strClusteringKey, location, htblColNameValues);
             }
+        }
+    }
+
+    public void delete(String strClusteringKey, Point3D location, Hashtable<String, Object> htblColNameValues){
+        if(entries != null){
+            boolean shift = false;
+            for(int i = 0; i < size; i++){
+                if(entries[i].getLocation().equals(location)){ // if this is the record in question
+                    if(entries[i].isOverflown()){ // if it has an overflow
+                        if(htblColNameValues.get(strClusteringKey).equals(entries[i].getHtblColNameValue().get(strClusteringKey))){
+                            entries[i] = entries[i].nextOverflow;
+                        }else {
+                            entries[i].delete(strClusteringKey, htblColNameValues);
+                        }
+                        if (entries[i].nextOverflow == null)
+                            entries[i].setOverflown(false);
+                        return;
+                    }else {
+                        shift = true;
+                    }
+                }
+                if(shift){
+                    if(!(i + 1 >= entries.length))
+                        entries[i] = entries[i + 1];
+                }
+            }
+            full = false;
+        }else {
+            if(location.x() >= centerPoint.x()
+                    && location.y() >= centerPoint.y()
+                    && location.z() >= centerPoint.z()){
+                //First Octant
+                children[0].delete(strClusteringKey, location, htblColNameValues);
+            }else if(location.x() < centerPoint.x()
+                    && location.y() > centerPoint.y()
+                    && location.z() > centerPoint.z()){
+                //Second Octant
+                children[1].delete(strClusteringKey, location, htblColNameValues);
+            }else if(location.x() < centerPoint.x()
+                    && location.y() < centerPoint.y()
+                    && location.z() > centerPoint.z()){
+                //Third Octant
+                children[2].delete(strClusteringKey, location, htblColNameValues);
+            }else if(location.x() > centerPoint.x()
+                    && location.y() < centerPoint.y()
+                    && location.z() > centerPoint.z()){
+                //Fourth Octant
+                children[3].delete(strClusteringKey, location, htblColNameValues);
+            }else if(location.x() > centerPoint.x()
+                    && location.y() > centerPoint.y()
+                    && location.z() < centerPoint.z()){
+                //Fifth Octant
+                children[4].delete(strClusteringKey, location, htblColNameValues);
+            }else if(location.x() < centerPoint.x()
+                    && location.y() > centerPoint.y()
+                    && location.z() < centerPoint.z()){
+                //Sixth Octant
+                children[5].delete(strClusteringKey, location, htblColNameValues);
+            }else if(location.x() < centerPoint.x()
+                    && location.y() < centerPoint.y()
+                    && location.z() < centerPoint.z()){
+                //Seventh Octant
+                children[6].delete(strClusteringKey, location, htblColNameValues);
+            }else if(location.x() > centerPoint.x()
+                    && location.y() < centerPoint.y()
+                    && location.z() < centerPoint.z()){
+                //Eighth Octant
+                children[7].delete(strClusteringKey, location, htblColNameValues);
+            }
+        }
+        size--;
+        if(entries == null && size <= OctTree.getMaxEntriesInOctTreeNode()){
+            this.revert();
         }
     }
 }
