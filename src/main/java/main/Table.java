@@ -101,7 +101,7 @@ public class Table implements Serializable{
         }
     }
 
-    // compareWith(o, e) = 1 if o > e, = -1 if o < e, = 0 if o = e
+    /** compareWith(o, e) > 0 if o > e, < 0 if o < e, = 0 if o = e*/
     private int compareWith(Object o, Object e){
         if(o instanceof Integer && e instanceof Integer)
             return ((Integer)o).compareTo((Integer)e);
@@ -437,6 +437,44 @@ public class Table implements Serializable{
         indices = null; // nulling out the indices vector
         p = null; // nulling out the page variable
         System.gc(); // starting the garbage collector
+    }
+
+    private boolean checkCondition(SQLTerm term, Hashtable<String, Object> htblColNameValues){
+        return switch (term._strOperator) {
+            case "=" -> compareWith(htblColNameValues.get(term._strColumnName), term._objValue) == 0;
+            case "!=" -> compareWith(htblColNameValues.get(term._strColumnName), term._objValue) != 0;
+            case "<" -> compareWith(htblColNameValues.get(term._strColumnName), term._objValue) < 0;
+            case "<=" -> compareWith(htblColNameValues.get(term._strColumnName), term._objValue) <= 0;
+            case ">" -> compareWith(htblColNameValues.get(term._strColumnName), term._objValue) > 0;
+            case ">=" -> compareWith(htblColNameValues.get(term._strColumnName), term._objValue) >= 0;
+            default -> false;
+        };
+    }
+
+    private boolean evaluate(Hashtable<String, Object> htblColNameValues, SQLTerm[] arrSQLTerms, String[] strarrOperators){
+        boolean result = checkCondition(arrSQLTerms[0], htblColNameValues);
+        for(int i = 0; i < strarrOperators.length; i++){
+            if(strarrOperators[i].equalsIgnoreCase("AND"))
+                result = result && checkCondition(arrSQLTerms[i + 1], htblColNameValues);
+            else if(strarrOperators[i].equalsIgnoreCase("OR"))
+                result = result || checkCondition(arrSQLTerms[i + 1], htblColNameValues);
+            else if(strarrOperators[i].equalsIgnoreCase("XOR"))
+                result = result ^ checkCondition(arrSQLTerms[i + 1], htblColNameValues);
+        }
+        return result;
+    }
+
+    public Iterator selectLinear(SQLTerm[] arrSQLTerms, String[] strarrOperators){
+        Vector<Hashtable<String, Object>> result = new Vector<>();
+        for(PageDetails e : details){
+            Page p = loadPage("src/main/resources/data/" + e.getPageName() + ".class");
+            assert p != null;
+            for(Hashtable<String, Object> s : p.getRecords()){
+                if(evaluate(s, arrSQLTerms, strarrOperators))
+                    result.add(s);
+            }
+        }
+        return result.iterator();
     }
 
     public String toString(){
