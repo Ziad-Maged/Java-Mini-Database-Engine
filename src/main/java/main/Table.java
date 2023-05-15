@@ -1,5 +1,6 @@
 package main.java.main;
 import main.java.exceptions.*;
+import main.java.index.OctTree;
 
 import java.io.*;
 import java.util.*;
@@ -131,8 +132,23 @@ public class Table implements Serializable{
         }
         return middle;
     }
+    
+    public Vector<OctTree> loadIndecies(){
+        Vector<OctTree> result = new Vector<>();
+        for(String e : vecIndexList){
+            try {
+                FileInputStream fileIn = new FileInputStream("src/main/resources/data/" + e + ".class");
+                ObjectInputStream in = new ObjectInputStream(fileIn);
+                result.add((OctTree) in.readObject());
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        return result;
+    }
 
     public void insert(String strClusteringKey, Hashtable<String,Object> htblColNameValue) throws InvalidInputException {
+        Vector<OctTree> indecies = loadIndecies(); // loading all indecies to insert the record in them
         inserting = true; // to indicate that the table is currently inserting a value
         boolean shift = false; // boolean variable to indicate whether we need to shift or not
         Page p; // preparing a Page variable
@@ -151,6 +167,8 @@ public class Table implements Serializable{
                     p = loadPage("src/main/resources/data/" + e.getPageName() + ".class"); //load the current page
                     assert p != null; // IntelliJ's precautionary measures against NullPointerException
                     p.setName(e.getPageName()); //set the current page name for later serialization
+                    for(OctTree index : indecies) // looping over all the indecies on the table to insert the record
+                        index.insert(strClusteringKey, e.getPageName(), htblColNameValue); // inserting the record in the index
                     if(e.isFull()){ // checking if the page is already full
                         shift = true; // setting the shift to true to start the shifting process
                         temp = p.getRecords().get(p.getRecords().size() - 1); // setting the temp variable to be the maximum record of the page to shift it to the next page
@@ -167,6 +185,8 @@ public class Table implements Serializable{
                     assert p != null; // IntelliJ's precautionary measures against NullPointerException
                     p.setName(e.getPageName()); // setting the name of the page
                     int indexOfInsertion = binarySearch(strClusteringKey, htblColNameValue, p.getRecords()); // get the index of insertion using binary search
+                    for(OctTree index : indecies) // looping over all the indecies on the table to insert the record
+                        index.insert(strClusteringKey, e.getPageName(), htblColNameValue); // inserting the record in the index
                     if(e.isFull()){ // checking if the page is already full
                         shift = true; // setting the shift to true to start the shifting process
                         temp = p.getRecords().get(p.getRecords().size() - 1); // setting the temp variable to be the maximum record of the page to shift it to the next page
@@ -184,6 +204,8 @@ public class Table implements Serializable{
                             p = loadPage("src/main/resources/data/" + e.getPageName() + ".class"); //load the current page
                             assert p != null; // IntelliJ's precautionary measures against NullPointerException
                             p.setName(e.getPageName()); // setting the name of the page
+                            for(OctTree index : indecies) // looping over all the indecies on the table to insert the record
+                                index.insert(strClusteringKey, e.getPageName(), htblColNameValue); // inserting the record in the index
                             p.getRecords().add(htblColNameValue); // inserting the input in the page
                             e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1)); // updating the maximum since the input is greater than the maximum
                             if(p.isFull()) // checking if the page is full after the insertion process
@@ -197,6 +219,8 @@ public class Table implements Serializable{
                             p = loadPage("src/main/resources/data/" + e.getPageName() + ".class"); //load the current page
                             assert p != null; // IntelliJ's precautionary measures against NullPointerException
                             p.setName(e.getPageName()); // setting the name of the page
+                            for(OctTree index : indecies) // looping over all the indecies on the table to insert the record
+                                index.insert(strClusteringKey, e.getPageName(), htblColNameValue); // inserting the record in the index
                             p.getRecords().add(htblColNameValue); // inserting the input in the page
                             e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1)); // updating the maximum since the input is greater than the maximum
                             if(p.isFull()) // checking if the page is full after the insertion process
@@ -205,9 +229,11 @@ public class Table implements Serializable{
                             break; // exiting out of the loop
                         }// if it is not the case that the input is less than the minimum of the next page. We skip the iteration because the input is greater than the minimum of the next page
                     }
-                }else if(compareMin == 0 || compareMax == 0)
-                    throw new InvalidInputException();
+                }else if(compareMin == 0 || compareMax == 0) // checking if to see is the value already in the page as a min or max or not
+                    throw new InvalidInputException(); // if true then we throw an exception to indicate that we were trying to insert duplicate values
             }else { // if shifting must be done.
+                for(OctTree index : indecies) // looping over all the indecies on the table to insert the record
+                    index.shiftByOnePage(strClusteringKey, temp);// shifting the temp variable's page reference in the index to the next page during the shifting process
                 if(!e.isFull()){ // if the page in question is not full then the shifting stops here
                     p = loadPage("src/main/resources/data/" + e.getPageName() + ".class"); //load the current page
                     assert p != null; // IntelliJ's precautionary measures against NullPointerException
@@ -237,9 +263,11 @@ public class Table implements Serializable{
             p = new Page(tableName, numberOfPages); // creating the new page
             p.getRecords().add(temp); // inserting the maximum of the last page in the table as the minimum in the new page
             addNewPage(p); // adding the new page to the table's details and saving it
+            for(OctTree index : indecies) // looping over all the indecies on the table to insert the record
+                index.shiftByOnePage(strClusteringKey, temp);// shifting the temp variable's page reference in the index to the next page after leaving the loop since the element that will be added to a new page on its own will not be shifted in the loop
         }
-        p = null;
-        System.gc();
+        p = null; // nulling out the page variable
+        System.gc(); // restarting the garbage collector
         numberOfRecords++; // incrementing the number of records in the table after each successful insertion
     }
 
