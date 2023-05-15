@@ -133,7 +133,7 @@ public class Table implements Serializable{
         return middle;
     }
     
-    public Vector<OctTree> loadIndecies(){
+    public Vector<OctTree> loadIndices(){
         Vector<OctTree> result = new Vector<>();
         for(String e : vecIndexList){
             try {
@@ -148,7 +148,7 @@ public class Table implements Serializable{
     }
 
     public void insert(String strClusteringKey, Hashtable<String,Object> htblColNameValue) throws InvalidInputException {
-        Vector<OctTree> indecies = loadIndecies(); // loading all indecies to insert the record in them
+        Vector<OctTree> indices = loadIndices(); // loading all indices to insert the record in them
         inserting = true; // to indicate that the table is currently inserting a value
         boolean shift = false; // boolean variable to indicate whether we need to shift or not
         Page p; // preparing a Page variable
@@ -167,7 +167,7 @@ public class Table implements Serializable{
                     p = loadPage("src/main/resources/data/" + e.getPageName() + ".class"); //load the current page
                     assert p != null; // IntelliJ's precautionary measures against NullPointerException
                     p.setName(e.getPageName()); //set the current page name for later serialization
-                    for(OctTree index : indecies) // looping over all the indecies on the table to insert the record
+                    for(OctTree index : indices) // looping over all the indices on the table to insert the record
                         index.insert(strClusteringKey, e.getPageName(), htblColNameValue); // inserting the record in the index
                     if(e.isFull()){ // checking if the page is already full
                         shift = true; // setting the shift to true to start the shifting process
@@ -185,7 +185,7 @@ public class Table implements Serializable{
                     assert p != null; // IntelliJ's precautionary measures against NullPointerException
                     p.setName(e.getPageName()); // setting the name of the page
                     int indexOfInsertion = binarySearch(strClusteringKey, htblColNameValue, p.getRecords()); // get the index of insertion using binary search
-                    for(OctTree index : indecies) // looping over all the indecies on the table to insert the record
+                    for(OctTree index : indices) // looping over all the indices on the table to insert the record
                         index.insert(strClusteringKey, e.getPageName(), htblColNameValue); // inserting the record in the index
                     if(e.isFull()){ // checking if the page is already full
                         shift = true; // setting the shift to true to start the shifting process
@@ -204,7 +204,7 @@ public class Table implements Serializable{
                             p = loadPage("src/main/resources/data/" + e.getPageName() + ".class"); //load the current page
                             assert p != null; // IntelliJ's precautionary measures against NullPointerException
                             p.setName(e.getPageName()); // setting the name of the page
-                            for(OctTree index : indecies) // looping over all the indecies on the table to insert the record
+                            for(OctTree index : indices) // looping over all the indices on the table to insert the record
                                 index.insert(strClusteringKey, e.getPageName(), htblColNameValue); // inserting the record in the index
                             p.getRecords().add(htblColNameValue); // inserting the input in the page
                             e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1)); // updating the maximum since the input is greater than the maximum
@@ -219,7 +219,7 @@ public class Table implements Serializable{
                             p = loadPage("src/main/resources/data/" + e.getPageName() + ".class"); //load the current page
                             assert p != null; // IntelliJ's precautionary measures against NullPointerException
                             p.setName(e.getPageName()); // setting the name of the page
-                            for(OctTree index : indecies) // looping over all the indecies on the table to insert the record
+                            for(OctTree index : indices) // looping over all the indices on the table to insert the record
                                 index.insert(strClusteringKey, e.getPageName(), htblColNameValue); // inserting the record in the index
                             p.getRecords().add(htblColNameValue); // inserting the input in the page
                             e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1)); // updating the maximum since the input is greater than the maximum
@@ -232,7 +232,7 @@ public class Table implements Serializable{
                 }else if(compareMin == 0 || compareMax == 0) // checking if to see is the value already in the page as a min or max or not
                     throw new InvalidInputException(); // if true then we throw an exception to indicate that we were trying to insert duplicate values
             }else { // if shifting must be done.
-                for(OctTree index : indecies) // looping over all the indecies on the table to insert the record
+                for(OctTree index : indices) // looping over all the indices on the table to insert the record
                     index.shiftByOnePage(strClusteringKey, temp);// shifting the temp variable's page reference in the index to the next page during the shifting process
                 if(!e.isFull()){ // if the page in question is not full then the shifting stops here
                     p = loadPage("src/main/resources/data/" + e.getPageName() + ".class"); //load the current page
@@ -263,7 +263,7 @@ public class Table implements Serializable{
             p = new Page(tableName, numberOfPages); // creating the new page
             p.getRecords().add(temp); // inserting the maximum of the last page in the table as the minimum in the new page
             addNewPage(p); // adding the new page to the table's details and saving it
-            for(OctTree index : indecies) // looping over all the indecies on the table to insert the record
+            for(OctTree index : indices) // looping over all the indices on the table to insert the record
                 index.shiftByOnePage(strClusteringKey, temp);// shifting the temp variable's page reference in the index to the next page after leaving the loop since the element that will be added to a new page on its own will not be shifted in the loop
         }
         p = null; // nulling out the page variable
@@ -361,6 +361,7 @@ public class Table implements Serializable{
 
     public void update(String strClusteringKey, Object objClusteringKeyValue,
                        Hashtable<String,Object> htblColNameValue) throws DBAppException {
+        Vector<OctTree> indices = loadIndices(); // loading all the indices that are on the table to update the location of the record of interest
         Page p; // preparing a temporary page
         for(PageDetails e : details){ // looping over the details of the page to compare the min and max values of the clustering key
             int compareMin = compareWith(objClusteringKeyValue,
@@ -371,20 +372,28 @@ public class Table implements Serializable{
                 p = loadPage("src/main/resources/data/" + e.getPageName() + ".class"); // loading the current page
                 assert p != null;
                 p.setName(e.getPageName()); // setting the current page name to be able to save later
+                for(OctTree index : indices) // looping over all the indices on the table
+                    index.delete(strClusteringKey, p.getRecords().get(0)); // deleting the record we want to update to reinsert it later using the new values for the columns
                 if(compareMin == 0){ // checking if the record in question is the minimum record (The first record)
                     for(String s : p.getRecords().get(0).keySet()){ // looping over all the keys in the record if the condition is true
                         if(!s.equals(strClusteringKey)) // checking that the current key is not the clustering key
                             p.getRecords().get(0).put(s, htblColNameValue.get(s)); // updating the content of the record
                     }
                     e.setMinimumRecord(p.getRecords().get(0)); // updating the minimum record of the details of the page to be able to save
+                    for(OctTree index : indices) // looping over all the indices on the table
+                        index.insert(strClusteringKey, e.getPageName(), p.getRecords().get(0)); // reinserting the record with its new values
                     p.savePage(); // saving the current page
                     return; // exiting out of the method entirely.
                 }else if(compareMax == 0){ // checking if the record in question is the maximum record
+                    for(OctTree index : indices) // looping over all the indices on the table
+                        index.delete(strClusteringKey, p.getRecords().get(p.getRecords().size() - 1)); // deleting the record we want to update to reinsert it later using the new values for the columns
                     for(String s : p.getRecords().get(p.getRecords().size() - 1).keySet()){ // looping over all the keys in the record if the condition is true
                         if(!s.equals(strClusteringKey)) // checking that the current key is not the clustering key
                             p.getRecords().get(p.getRecords().size() - 1).put(s, htblColNameValue.get(s)); // updating the content of the record
                     }
                     e.setMaximumRecord(p.getRecords().get(p.getRecords().size() - 1)); // updating the maximum record of the details of the page to be able to save
+                    for(OctTree index : indices) // looping over all the indices on the table
+                        index.insert(strClusteringKey, e.getPageName(), p.getRecords().get(p.getRecords().size() - 1)); // reinserting the record with its new values
                     p.savePage(); // saving the page
                     return; // exiting out of the method entirely
                 }else { // if it is somewhere in the middle of the page
@@ -393,10 +402,14 @@ public class Table implements Serializable{
                     int index = binarySearch(strClusteringKey, temp, p.getRecords()); // performing binary search on the page to find the record in question
                     if(compareWith(p.getRecords().get(index).get(strClusteringKey), objClusteringKeyValue) != 0) // checking if the record in question is present in the table
                         throw new InvalidInputException("Input value for clustering key could not be found"); // halting the program and throwing an exception if the record in question is not present in the table if the condition is true
+                    for(OctTree s : indices) // looping over all the indices on the table
+                        s.delete(strClusteringKey, p.getRecords().get(index)); // deleting the record we want to update to reinsert it later using the new values for the columns
                     for(String s : p.getRecords().get(index).keySet()){ // looping over all the keys in the record if the condition is true
                         if(!s.equals(strClusteringKey)) // checking that the current key is not the clustering key
                             p.getRecords().get(index).put(s, htblColNameValue.get(s)); // updating the content of the record
                     }
+                    for(OctTree s : indices) // looping over all the indices on the table
+                        s.insert(strClusteringKey, e.getPageName(), p.getRecords().get(index)); // reinserting the record with its new values
                     p.savePage(); // saving the page
                     return; // exiting out of the method entirely
                 }
