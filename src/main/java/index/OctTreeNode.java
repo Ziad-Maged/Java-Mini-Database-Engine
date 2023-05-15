@@ -59,21 +59,29 @@ public class OctTreeNode implements Serializable {
         int i = 0;
         entries = new OctTreeEntry[OctTree.getMaxEntriesInOctTreeNode()];
         for(OctTreeEntry e : children[0].getEntries())
-            entries[i++] = e;
+            if(e != null)
+                entries[i++] = e;
         for(OctTreeEntry e : children[1].getEntries())
-            entries[i++] = e;
+            if(e != null)
+                entries[i++] = e;
         for(OctTreeEntry e : children[2].getEntries())
-            entries[i++] = e;
+            if(e != null)
+                entries[i++] = e;
         for(OctTreeEntry e : children[3].getEntries())
-            entries[i++] = e;
+            if(e != null)
+                entries[i++] = e;
         for(OctTreeEntry e : children[4].getEntries())
-            entries[i++] = e;
+            if(e != null)
+                entries[i++] = e;
         for(OctTreeEntry e : children[5].getEntries())
-            entries[i++] = e;
+            if(e != null)
+                entries[i++] = e;
         for(OctTreeEntry e : children[6].getEntries())
-            entries[i++] = e;
+            if(e != null)
+                entries[i++] = e;
         for(OctTreeEntry e : children[7].getEntries())
-            entries[i++] = e;
+            if(e != null)
+                entries[i++] = e;
         children = null;
         centerPoint = null;
     }
