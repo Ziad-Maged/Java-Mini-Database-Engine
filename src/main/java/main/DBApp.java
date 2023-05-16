@@ -8,6 +8,7 @@ import com.opencsv.CSVWriter;
 
 import java.io.*;
 import main.java.exceptions.*;
+import main.java.index.OctTree;
 import main.java.miscellaneous.Null;
 
 public class DBApp {
@@ -83,13 +84,105 @@ public class DBApp {
             writer.close();
             Table table = new Table(strTableName);
             table.saveTable();
-        }catch(Exception e) {
-            System.out.println(e.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
     public void createIndex(String strTableName, String[] strarrColName) throws DBAppException {
-        //TODO IN MILESTONE TWO
+        if(strarrColName.length != 3)
+            throw new InvalidInputException("Octree Index must be performed on exactly three indices only");
+        try {
+            Vector<String> vecCols = new Vector<>();
+            Hashtable<String, Double> htblMinMax = new Hashtable<>();
+            String strClusteringKey = "";
+            BufferedReader br = new BufferedReader(new FileReader("src/main/resources/metadata.csv"));
+            String s = br.readLine();
+            while(s != null){
+                String[] header = s.split(",");
+                if(header[0].equals(strTableName)){
+                    if(header[3].equalsIgnoreCase("True"))
+                        strClusteringKey = header[1];
+                    vecCols.add(header[1]);
+                    if(header[1].equals(strarrColName[0])){
+                        switch (header[2]) {
+                            case "java.lang.Integer" -> {
+                                htblMinMax.put("MinX", OctTree.enumerateObjects(Integer.parseInt(header[6])));
+                                htblMinMax.put("MaxX", OctTree.enumerateObjects(Integer.parseInt(header[7])));
+                            }
+                            case "java.lang.Double" -> {
+                                htblMinMax.put("MinX", OctTree.enumerateObjects(Double.parseDouble(header[6])));
+                                htblMinMax.put("MaxX", OctTree.enumerateObjects(Double.parseDouble(header[7])));
+                            }
+                            case "java.lang.String" -> {
+                                htblMinMax.put("MinX", OctTree.enumerateObjects(header[6]));
+                                htblMinMax.put("MaxX", OctTree.enumerateObjects(header[7]));
+                            }
+                            case "java.util.Date" -> {
+                                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                                htblMinMax.put("MinX", OctTree.enumerateObjects(formatter.parse(header[6])));
+                                htblMinMax.put("MaxX", OctTree.enumerateObjects(formatter.parse(header[7])));
+                            }
+                        }
+                    }else if(header[1].equals(strarrColName[1])){
+                        switch (header[2]) {
+                            case "java.lang.Integer" -> {
+                                htblMinMax.put("MinY", OctTree.enumerateObjects(Integer.parseInt(header[6])));
+                                htblMinMax.put("MaxY", OctTree.enumerateObjects(Integer.parseInt(header[7])));
+                            }
+                            case "java.lang.Double" -> {
+                                htblMinMax.put("MinY", OctTree.enumerateObjects(Double.parseDouble(header[6])));
+                                htblMinMax.put("MaxY", OctTree.enumerateObjects(Double.parseDouble(header[7])));
+                            }
+                            case "java.lang.String" -> {
+                                htblMinMax.put("MinY", OctTree.enumerateObjects(header[6]));
+                                htblMinMax.put("MaxY", OctTree.enumerateObjects(header[7]));
+                            }
+                            case "java.util.Date" -> {
+                                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                                htblMinMax.put("MinY", OctTree.enumerateObjects(formatter.parse(header[6])));
+                                htblMinMax.put("MaxY", OctTree.enumerateObjects(formatter.parse(header[7])));
+                            }
+                        }
+                    }else if(header[1].equals(strarrColName[2])){
+                        switch (header[2]) {
+                            case "java.lang.Integer" -> {
+                                htblMinMax.put("MinZ", OctTree.enumerateObjects(Integer.parseInt(header[6])));
+                                htblMinMax.put("MaxZ", OctTree.enumerateObjects(Integer.parseInt(header[7])));
+                            }
+                            case "java.lang.Double" -> {
+                                htblMinMax.put("MinZ", OctTree.enumerateObjects(Double.parseDouble(header[6])));
+                                htblMinMax.put("MaxZ", OctTree.enumerateObjects(Double.parseDouble(header[7])));
+                            }
+                            case "java.lang.String" -> {
+                                htblMinMax.put("MinZ", OctTree.enumerateObjects(header[6]));
+                                htblMinMax.put("MaxZ", OctTree.enumerateObjects(header[7]));
+                            }
+                            case "java.util.Date" -> {
+                                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                                htblMinMax.put("MinZ", OctTree.enumerateObjects(formatter.parse(header[6])));
+                                htblMinMax.put("MaxZ", OctTree.enumerateObjects(formatter.parse(header[7])));
+                            }
+                        }
+                    }
+                }
+                s = br.readLine();
+            }
+            if(!vecCols.contains(strarrColName[0]) || !vecCols.contains(strarrColName[1]) || !vecCols.contains(strarrColName[2]))
+                throw new InvalidInputException("Columns entered do not exits in the table");
+
+            String indexName = strTableName + "_" + strarrColName[0] + "_" + strarrColName[1] + "_" + strarrColName[2];
+
+            FileInputStream fileIn = new FileInputStream("src/main/resources/data/" + strTableName + ".class");
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            Table table = (Table) in.readObject();
+            table.createIndex(strClusteringKey, indexName, htblMinMax);
+            table.saveTable();
+            fileIn.close();
+            in.close();
+        } catch (ClassNotFoundException | IOException | ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void checkMinMaxInput(Hashtable<String, Object> htblColNameValue,

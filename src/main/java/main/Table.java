@@ -70,6 +70,20 @@ public class Table implements Serializable{
         }
     }
 
+    public void createIndex(String strClusteringKey, String indexName, Hashtable<String, Double> htblMinMax){
+        OctTree index = new OctTree(indexName, htblMinMax);
+        if(numberOfRecords > 0){
+            for(PageDetails e : details){
+                Page p = loadPage("src/main/resources/data/" + e.getPageName() + ".class");
+                assert p != null;
+                for(Hashtable<String, Object> s : p.getRecords())
+                    index.insert(strClusteringKey, e.getPageName(), s);
+            }
+        }
+        vecIndexList.add(indexName);
+        index.saveIndex();
+    }
+
     /**
      * This method is made to clear the whole table in case the input to the delete method has an
      * <b><i>empty hashtable</i></b>.*/
