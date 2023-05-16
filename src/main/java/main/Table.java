@@ -464,7 +464,7 @@ public class Table implements Serializable{
         return result;
     }
 
-    public Iterator selectLinear(SQLTerm[] arrSQLTerms, String[] strarrOperators){
+    public Iterator select(SQLTerm[] arrSQLTerms, String[] strarrOperators){
         Vector<Hashtable<String, Object>> result = new Vector<>();
         for(PageDetails e : details){
             Page p = loadPage("src/main/resources/data/" + e.getPageName() + ".class");
