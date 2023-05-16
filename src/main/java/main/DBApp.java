@@ -180,8 +180,28 @@ public class DBApp {
             table.saveTable();
             fileIn.close();
             in.close();
-        } catch (ClassNotFoundException | IOException | ParseException e) {
-            throw new RuntimeException(e);
+
+            File metadata = new File("src/main/resources/data/metadata.csv");
+            br = new BufferedReader(new FileReader("src/main/resources/metadata.csv"));
+            List<String[]> currentMetadataStringList = new Vector<>();
+            String row = br.readLine();
+            while(row != null) {
+                String[] head = row.split(",");
+                if(head[1].equals(strarrColName[0]) || head[1].equals(strarrColName[1]) || head[1].equals(strarrColName[2])){
+                    head[4] = indexName;
+                    head[5] = "Octree";
+                }
+                currentMetadataStringList.add(head);
+                row = br.readLine();
+            }
+            FileWriter outputFile = new FileWriter(metadata);
+            CSVWriter writer = new CSVWriter(outputFile, ',',
+                    CSVWriter.NO_QUOTE_CHARACTER, CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END);
+            writer.writeAll(currentMetadataStringList);
+            writer.close();
+            br.close();
+        } catch (IOException | ParseException | ClassNotFoundException ex) {
+                throw new RuntimeException(ex);
         }
     }
 
