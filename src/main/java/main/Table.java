@@ -478,9 +478,50 @@ public class Table implements Serializable{
         return result;
     }
 
-    public Iterator selectLinear(String strClusteringKey, SQLTerm[] arrSQLTerms, String[] strarrOperators){
-        String indexName = "";
+    public boolean allADDED(String[] strarrOperators){
+        for(String e : strarrOperators)
+            if(!e.equalsIgnoreCase("AND"))
+                return false;
+        return true;
+    }
+
+    public String getIndex(SQLTerm[] arrSQLTerm){
+        Vector<String> temp = new Vector();
+        for(SQLTerm term : arrSQLTerm){
+            temp.add(term._strColumnName);
+        }
+        for (String s : vecIndexList) {
+            String[] info = s.split("_");
+            if (temp.contains(info[0]) && temp.contains(info[1]) && temp.contains(info[2]))
+                return s;
+        }
+        return null;
+    }
+
+    public Iterator select(String strClusteringKey, SQLTerm[] arrSQLTerms, String[] strarrOperators) throws InvalidInputException {
+        Vector<OctTree> index = loadIndices();
+        String indexName = getIndex(arrSQLTerms);
         Vector<Hashtable<String, Object>> result = new Vector<>();
+        if(allADDED(strarrOperators) && indexName != null){
+            OctTree e = null;
+            for(OctTree x : index){
+                if(x.getStrIndexName().equals(indexName)){
+                    e = x;
+                    break;
+                }
+            }
+            assert e != null;
+            Vector<Object[]> list = e.select(strClusteringKey, arrSQLTerms);
+            for(Object[] entry : list){
+                Page p = loadPage("src/main/resources/data/" + entry[0].toString() + ".class");
+                assert p != null;
+                Hashtable<String, Object> temp = new Hashtable<>();
+                temp.put(strClusteringKey, entry[1]);
+                int indexOfSelect = binarySearch(strClusteringKey, temp, p.getRecords());
+                result.add(p.getRecords().get(indexOfSelect));
+            }
+            return result.iterator();
+        }
         for(PageDetails e : details){
             Page p = loadPage("src/main/resources/data/" + e.getPageName() + ".class");
             assert p != null;

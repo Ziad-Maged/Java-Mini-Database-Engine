@@ -387,7 +387,31 @@ public class DBApp {
     public Iterator selectFromTable(SQLTerm[] arrSQLTerms, String[] strarrOperators) throws DBAppException {
         if(strarrOperators.length != arrSQLTerms.length - 1)
             throw new InvalidInputException("Size of Operators must be one less than the number of queried columns");
-        return null;
+
+        try{
+            String strClusteringKey = "";
+            String strTableName = arrSQLTerms[0]._strTableName;
+            BufferedReader br = new BufferedReader(new FileReader("src/main/resources/metadata.csv"));
+            String s = br.readLine();
+            while(s != null){
+                String[] header = s.split(",");
+                if(header[0].equals(strTableName)){
+
+                    if(header[3].equals("True"))
+                        strClusteringKey = header[1];
+                }
+                s = br.readLine();
+            }
+            Table table;
+            FileInputStream fileIn = new FileInputStream("src/main/resources/data/" + strTableName + ".class");
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            table = (Table) in.readObject();
+            fileIn.close();
+            in.close();
+            return table.select(strClusteringKey, arrSQLTerms, strarrOperators);
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
