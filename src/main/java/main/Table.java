@@ -116,7 +116,7 @@ public class Table implements Serializable{
     }
 
     /** compareWith(o, e) > 0 if o > e, < 0 if o < e, = 0 if o = e*/
-    private int compareWith(Object o, Object e){
+    public static int compareWith(Object o, Object e){
         if(o instanceof Integer && e instanceof Integer)
             return ((Integer)o).compareTo((Integer)e);
         else if(o instanceof Double && e instanceof Double)
@@ -478,7 +478,8 @@ public class Table implements Serializable{
         return result;
     }
 
-    public Iterator selectLinear(SQLTerm[] arrSQLTerms, String[] strarrOperators){
+    public Iterator selectLinear(String strClusteringKey, SQLTerm[] arrSQLTerms, String[] strarrOperators){
+        String indexName = "";
         Vector<Hashtable<String, Object>> result = new Vector<>();
         for(PageDetails e : details){
             Page p = loadPage("src/main/resources/data/" + e.getPageName() + ".class");

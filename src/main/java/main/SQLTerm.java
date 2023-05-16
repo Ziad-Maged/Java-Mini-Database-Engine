@@ -2,10 +2,10 @@ package main.java.main;
 
 public class SQLTerm {
 
-    protected String _strTableName;
-    protected String _strColumnName;
-    protected String _strOperator;
-    protected Object _objValue;
+    public String _strTableName;
+    public String _strColumnName;
+    public String _strOperator;
+    public Object _objValue;
 
     public SQLTerm() {
         //TODO LATER

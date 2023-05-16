@@ -1,9 +1,12 @@
 package main.java.index;
 
 import main.java.main.DBApp;
+import main.java.main.SQLTerm;
+import main.java.main.Table;
 
 import java.io.Serializable;
 import java.util.Hashtable;
+import java.util.Vector;
 
 public class OctTreeNode implements Serializable {
     private OctTreeEntry[] entries;
@@ -326,6 +329,48 @@ public class OctTreeNode implements Serializable {
         size--;
         if(entries == null && size <= OctTree.getMaxEntriesInOctTreeNode()){
             this.revert();
+        }
+    }
+
+    private static boolean checkCondition(SQLTerm term, Hashtable<String, Object> htblColNameValues){
+        return switch (term._strOperator) {
+            case "=" -> Table.compareWith(htblColNameValues.get(term._strColumnName), term._objValue) == 0;
+            case "!=" -> Table.compareWith(htblColNameValues.get(term._strColumnName), term._objValue) != 0;
+            case "<" -> Table.compareWith(htblColNameValues.get(term._strColumnName), term._objValue) < 0;
+            case "<=" -> Table.compareWith(htblColNameValues.get(term._strColumnName), term._objValue) <= 0;
+            case ">" -> Table.compareWith(htblColNameValues.get(term._strColumnName), term._objValue) > 0;
+            case ">=" -> Table.compareWith(htblColNameValues.get(term._strColumnName), term._objValue) >= 0;
+            default -> false;
+        };
+    }
+
+    public static boolean evaluate(Hashtable<String, Object> htblColNameValues, SQLTerm[] arrSQLTerms){
+        boolean result = true;
+        for(SQLTerm term : arrSQLTerms){
+            result = result && checkCondition(term, htblColNameValues);
+        }
+        return result;
+    }
+
+    public void select(String strClusteringKey, Point3D min, Point3D max, SQLTerm[] arrSQLTerms, Vector<Object[]> result){
+        if(entries != null){
+            for(OctTreeEntry entry : entries){
+                if(entry.getLocation().x() > max.x() || entry.getLocation().y() > max.y() || entry.getLocation().z() > max.z()) continue;
+                if(entry.getLocation().x() < min.x() || entry.getLocation().y() < min.y() || entry.getLocation().z() < min.z()) continue;
+                if(evaluate(entry.getHtblColNameValue(), arrSQLTerms)){
+                    Object[] res = {entry.getPage(), entry.getHtblColNameValue().get(strClusteringKey)};
+                    result.add(res);
+                    if(entry.isOverflown()){
+                        entry.select(strClusteringKey, arrSQLTerms, result);
+                    }
+                }
+            }
+        }else {
+            for(OctTreeNode octant : children){
+                if(octant.getMaximum().x() < min.x() || octant.getMaximum().y() < min.y() || octant.getMaximum().z() < min.z()) continue;
+                if(octant.getMinimum().x() > max.x() || octant.getMinimum().y() > max.y() || octant.getMinimum().z() > max.z()) continue;
+                octant.select(strClusteringKey, min, max, arrSQLTerms, result);
+            }
         }
     }
 }

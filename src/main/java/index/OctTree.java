@@ -1,5 +1,7 @@
 package main.java.index;
 
+import main.java.main.SQLTerm;
+
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.ObjectOutputStream;
@@ -80,9 +82,59 @@ public class OctTree implements Serializable {
         root.delete(strClusteringKey, new Point3D(x, y ,z), htblColNameValues);
     }
 
-    public Iterator selectFromTable(){
-        //TODO Later
-        return null;
+    public Vector<Object[]> select(String strClusteringKey, SQLTerm[] arrSQLTerms){
+        Vector<Object[]> result = new Vector<>();
+        double inputX = enumerateObjects(arrSQLTerms[0]._objValue);
+        double inputY = enumerateObjects(arrSQLTerms[1]._objValue);
+        double inputZ = enumerateObjects(arrSQLTerms[2]._objValue);
+        double minX = 0.0, minY = 0.0, minZ = 0.0, maxX = 0.0, maxY = 0.0, maxZ = 0.0;
+        switch (arrSQLTerms[0]._strOperator) {
+            case "<", "<=" -> {
+                minX = minPoint.x();
+                maxX = inputX;
+            }
+            case ">", ">=" -> {
+                minX = inputX;
+                maxX = maxPoint.x();
+            }
+            case "=" -> minX = maxX = inputX;
+            case "!=" -> {
+                minX = minPoint.x();
+                maxX = maxPoint.x();
+            }
+        }
+        switch (arrSQLTerms[1]._strOperator) {
+            case "<", "<=" -> {
+                minY = minPoint.y();
+                maxY = inputY;
+            }
+            case ">", ">=" -> {
+                minY = inputY;
+                maxY = maxPoint.y();
+            }
+            case "=" -> minY = maxY = inputY;
+            case "!=" -> {
+                minY = minPoint.y();
+                maxY = maxPoint.y();
+            }
+        }
+        switch (arrSQLTerms[2]._strOperator) {
+            case "<", "<=" -> {
+                minZ = minPoint.z();
+                maxZ = inputZ;
+            }
+            case ">", ">=" -> {
+                minZ = inputZ;
+                maxZ = maxPoint.z();
+            }
+            case "=" -> minZ = maxZ = inputZ;
+            case "!=" -> {
+                minZ = minPoint.z();
+                maxZ = maxPoint.z();
+            }
+        }
+        root.select(strClusteringKey, new Point3D(minX, minY, minZ), new Point3D(maxX, maxY, maxZ), arrSQLTerms, result);
+        return result;
     }
 
     public static double enumerateObjects(Object data){

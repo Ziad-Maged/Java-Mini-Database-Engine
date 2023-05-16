@@ -1,7 +1,10 @@
 package main.java.index;
 
+import main.java.main.SQLTerm;
+
 import java.io.Serializable;
 import java.util.Hashtable;
+import java.util.Vector;
 
 public class OctTreeEntry implements Serializable {
     private String page;
@@ -64,6 +67,15 @@ public class OctTreeEntry implements Serializable {
             return;
         }
         nextOverflow.delete(strClusteringKey, htblColNameValues);
+    }
+
+    public void select(String strClusteringKey, SQLTerm[] arrSQLTerms, Vector<Object[]> result){
+        if(OctTreeNode.evaluate(nextOverflow.getHtblColNameValue(), arrSQLTerms)) {
+            Object[] res = {nextOverflow.getPage(), nextOverflow.getHtblColNameValue().get(strClusteringKey)};
+            result.add(res);
+        }
+        if(nextOverflow.isOverflown())
+            nextOverflow.select(strClusteringKey, arrSQLTerms, result);
     }
 
     public String toString(){
