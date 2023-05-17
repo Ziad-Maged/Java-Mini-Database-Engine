@@ -511,7 +511,17 @@ public class Table implements Serializable{
                 }
             }
             assert e != null;
-            Vector<Object[]> list = e.select(strClusteringKey, arrSQLTerms);
+            String[] indexColumns = indexName.split("_");
+            SQLTerm[] selectTermsArray = new SQLTerm[3];
+            for(SQLTerm term : arrSQLTerms){
+                if(term._strColumnName.equals(indexColumns[1]))
+                    selectTermsArray[0] = term;
+                else if(term._strColumnName.equals(indexColumns[2]))
+                    selectTermsArray[1] = term;
+                else if(term._strColumnName.equals(indexColumns[3]))
+                    selectTermsArray[2] = term;
+            }
+            Vector<Object[]> list = e.select(strClusteringKey, selectTermsArray);
             for(Object[] entry : list){
                 Page p = loadPage("src/main/resources/data/" + entry[0].toString() + ".class");
                 assert p != null;
