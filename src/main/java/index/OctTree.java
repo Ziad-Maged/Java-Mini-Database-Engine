@@ -54,11 +54,13 @@ public class OctTree implements Serializable {
     }
 
     public void insert(String strClusteringKey, String pageName, Hashtable<String, Object> htblColNameValues){
-        String[] info = strIndexName.split("_");
+        String[] info = strIndexName.split("x");
         double x = enumerateObjects(htblColNameValues.get(info[1]));
         double y = enumerateObjects(htblColNameValues.get(info[2]));
         double z = enumerateObjects(htblColNameValues.get(info[3]));
         Hashtable<String, Object> recordInfo = new Hashtable<>();
+        System.out.println(info[1]);
+        System.out.println(htblColNameValues.get(info[1]));
         recordInfo.put(info[1], htblColNameValues.get(info[1]));
         recordInfo.put(info[2], htblColNameValues.get(info[2]));
         recordInfo.put(info[3], htblColNameValues.get(info[3]));
@@ -67,7 +69,7 @@ public class OctTree implements Serializable {
     }
 
     public void shiftByOnePage(String strClusteringKey, Hashtable<String, Object> htblColNameValues){
-        String[] info = strIndexName.split("_");
+        String[] info = strIndexName.split("x");
         double x = enumerateObjects(htblColNameValues.get(info[1]));
         double y = enumerateObjects(htblColNameValues.get(info[2]));
         double z = enumerateObjects(htblColNameValues.get(info[3]));
@@ -75,7 +77,7 @@ public class OctTree implements Serializable {
     }
 
     public void delete(String strClusteringKey, Hashtable<String, Object> htblColNameValues){
-        String[] info = strIndexName.split("_");
+        String[] info = strIndexName.split("x");
         double x = enumerateObjects(htblColNameValues.get(info[1]));
         double y = enumerateObjects(htblColNameValues.get(info[2]));
         double z = enumerateObjects(htblColNameValues.get(info[3]));

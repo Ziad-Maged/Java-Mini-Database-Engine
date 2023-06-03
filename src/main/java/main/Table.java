@@ -17,6 +17,7 @@ public class Table implements Serializable{
     public Table(String tableName) {
         this.tableName = tableName;
         details = new Vector<>();
+        vecIndexList = new Vector<>();
         numberOfPages = 0;
         numberOfRecords = 0;
     }
@@ -76,8 +77,10 @@ public class Table implements Serializable{
             for(PageDetails e : details){
                 Page p = loadPage("src/main/resources/data/" + e.getPageName() + ".class");
                 assert p != null;
-                for(Hashtable<String, Object> s : p.getRecords())
+                for(Hashtable<String, Object> s : p.getRecords()){
+                    System.out.println(s);
                     index.insert(strClusteringKey, e.getPageName(), s);
+                }
             }
         }
         vecIndexList.add(indexName);
@@ -491,7 +494,7 @@ public class Table implements Serializable{
             temp.add(term._strColumnName);
         }
         for (String s : vecIndexList) {
-            String[] info = s.split("_");
+            String[] info = s.split("x");
             if (temp.contains(info[0]) && temp.contains(info[1]) && temp.contains(info[2]))
                 return s;
         }
@@ -511,7 +514,7 @@ public class Table implements Serializable{
                 }
             }
             assert e != null;
-            String[] indexColumns = indexName.split("_");
+            String[] indexColumns = indexName.split("x");
             SQLTerm[] selectTermsArray = new SQLTerm[3];
             for(SQLTerm term : arrSQLTerms){
                 if(term._strColumnName.equals(indexColumns[1]))

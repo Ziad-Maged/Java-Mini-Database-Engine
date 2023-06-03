@@ -53,9 +53,12 @@ public class OctTreeNode implements Serializable {
         //Eighth Octant
         children[7].setMinimum(new Point3D(centerPoint.x(), minimum.y(), minimum.z()));
         children[7].setMaximum(new Point3D(maximum.x(), centerPoint.y(), centerPoint.z()));
-        for(OctTreeEntry e : entries)
-            distribute(e);
-        entries = null;
+        for(OctTreeEntry e : entries){
+            if(e != null){
+                distribute(e);
+            }
+        }
+//        entries = null;
     }
 
     public void revert(){
@@ -184,7 +187,7 @@ public class OctTreeNode implements Serializable {
         //TODO Check if duplicate and add as overflow.
         if(!full){
             for(OctTreeEntry entry : entries){
-                if(entry.getLocation().equals(location)){
+                if(entry != null && entry.getLocation().equals(location)){
                     entry.insertOverflow(pageName, location, htblColNameValue);
                     return;
                 }
@@ -198,6 +201,7 @@ public class OctTreeNode implements Serializable {
             OctTreeEntry entry = new OctTreeEntry(pageName, htblColNameValue, location);
             distribute(entry);
             size++;
+//            entries = null;
         }
     }
 
@@ -206,7 +210,7 @@ public class OctTreeNode implements Serializable {
         if(entries != null){
             for(OctTreeEntry entry : entries){
                 if(entry.getLocation().equals(location) && entry.getHtblColNameValue().get(strClusteringKey).equals(htblColNameValues.get(strClusteringKey))){
-                    String[] pageName = entry.getPage().split("_");
+                    String[] pageName = entry.getPage().split("x");
                     entry.setPage(pageName[0] + (Integer.parseInt(pageName[1]) + 1));
                     return;
                 }else if(entry.getLocation().equals(location) && entry.isOverflown()){
