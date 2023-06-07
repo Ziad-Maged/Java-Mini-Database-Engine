@@ -643,19 +643,37 @@ public class DBApp {
         DBApp db = new DBApp();
         db.init();
 
-//	        SQLTerm[] arrSQLTerms;
-//	        arrSQLTerms = new SQLTerm[2];
+	        SQLTerm[] arrSQLTerms;
+	        arrSQLTerms = new SQLTerm[3];
 //	        arrSQLTerms[0] = new SQLTerm();
 //	        arrSQLTerms[0]._strTableName = "students";
 //	        arrSQLTerms[0]._strColumnName= "first_name";
 //	        arrSQLTerms[0]._strOperator = "=";
 //	        arrSQLTerms[0]._objValue =row.get("first_name");
-//
-//	        arrSQLTerms[1] = new SQLTerm();
-//	        arrSQLTerms[1]._strTableName = "students";
-//	        arrSQLTerms[1]._strColumnName= "gpa";
-//	        arrSQLTerms[1]._strOperator = "<=";
-//	        arrSQLTerms[1]._objValue = row.get("gpa");
+
+	        arrSQLTerms[0] = new SQLTerm();
+	        arrSQLTerms[0]._strTableName = "students";
+	        arrSQLTerms[0]._strColumnName= "gpa";
+	        arrSQLTerms[0]._strOperator = ">";
+	        arrSQLTerms[0]._objValue = 0.78;
+
+        arrSQLTerms[1] = new SQLTerm();
+        arrSQLTerms[1]._strTableName = "students";
+        arrSQLTerms[1]._strColumnName= "id";
+        arrSQLTerms[1]._strOperator = ">";
+        arrSQLTerms[1]._objValue = "80-0000";
+
+        arrSQLTerms[2] = new SQLTerm();
+        arrSQLTerms[2]._strTableName = "students";
+        arrSQLTerms[2]._strColumnName= "first_name";
+        arrSQLTerms[2]._strOperator = "!=";
+        arrSQLTerms[2]._objValue = "hWknCP";
+
+            Iterator it = db.selectFromTable(arrSQLTerms, new String[]{"AND", "AND"});
+            while (it.hasNext())
+            {
+                System.out.println(it.next());
+            }
 //
 //	        String[]strarrOperators = new String[1];
 //	        strarrOperators[0] = "OR";
@@ -686,11 +704,11 @@ public class DBApp {
 //        db.deleteFromTable("courses", h);
 
 //        db.createIndex("students", new String []{"id", "gpa", "first_name"});
-        db.createIndex("courses", new String[]{"date_added", "course_id", "hours"});
-        FileInputStream fileIn = new FileInputStream("src/main/resources/data/courses.class");
-        ObjectInputStream in = new ObjectInputStream(fileIn);
-        Table t = (Table) in.readObject();
-        System.out.println(t);
+//        db.createIndex("courses", new String[]{"date_added", "course_id", "hours"});
+//        FileInputStream fileIn = new FileInputStream("src/main/resources/data/courses.class");
+//        ObjectInputStream in = new ObjectInputStream(fileIn);
+//        Table t = (Table) in.readObject();
+//        System.out.println(t);
 
     }
 
